@@ -2,4 +2,4 @@
 
 # C Compiler
 
-Homeworks from *"Machine Learning"* course at Faculty of Computing in Belgrade.
+Lightweight modular C compiler with code optimization support.
