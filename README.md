@@ -2,4 +2,4 @@
 
 # C Compiler
 
-Lightweight modular C compiler with code optimization support.
+Lightweight modular C compiler with code optimization.
