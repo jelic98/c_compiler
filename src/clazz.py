@@ -25,22 +25,25 @@ class Clazz(enum.Enum):
     LBRACE = 19
     RBRACE = 20
 
-    SEMICOLON = 21
+    ASSIGN = 21
+    SEMICOLON = 22
+    COMMA = 23
     
-    INT = 22
-    CHAR = 23
-    STRING = 24
-    VOID = 25
+    TYPE = 24
+    INT = 25
+    CHAR = 26
+    STRING = 27
+    VOID = 28
 
-    IF = 26
-    ELSE = 27
-    WHILE = 28
-    FOR = 29
+    IF = 29
+    ELSE = 30
+    WHILE = 31
+    FOR = 32
 
-    BREAK = 30
-    CONTINUE = 31
-    RETURN = 32
+    BREAK = 33
+    CONTINUE = 34
+    RETURN = 35
 
-    ID = 33
-    MAIN = 34
-    EOF = 35
+    ID = 36
+    MAIN = 37
+    EOF = 38
