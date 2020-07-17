@@ -1,13 +1,13 @@
 int main() {
 	int a;
-	int b;
-	int c;
+	int bcd;
+	int ef;
 
-	a = 1;
-	b = 2;
-	c = a + b;
+	a = 12;
+	bcd = 345;
+	ef = a + bcd;
 
-	printf("%d\n", c);
+	printf("%d\n", ef);
 
 	return 0;
 }

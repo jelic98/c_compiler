@@ -5,66 +5,61 @@ from src.token import Token
 class Lexer():
     def __init__(self, text):
         self.text = text
-        self.pos = 0
+        self.len = len(text)
+        self.pos = -1
 
     def read_space(self):
-        while self.pos < len(self.text) and self.text[self.pos].isspace():
-            self.pos += 1
-
-    def read_char(self):
-        self.pos += 1
-        if self.pos >= len(self.text):
-            self.die("")
-        lexeme = self.text[self.pos]
-        return lexeme
+        while self.pos + 1 < self.len and self.text[self.pos+1].isspace():
+            self.next_char()
 
     def read_int(self):
-        lexeme = ''
-        while (self.pos < len(self.text) and self.text[self.pos].isdigit()):
-            lexeme += self.text[self.pos]
-            self.pos += 1
-        self.pos -= 1
+        lexeme = self.text[self.pos]
+        while self.pos + 1 < self.len and self.text[self.pos+1].isdigit():
+            lexeme += self.next_char()
         return int(lexeme)
 
     def read_string(self):
         lexeme = ''
+        while self.pos + 1 < self.len and self.text[self.pos+1] != '"':
+            lexeme += self.next_char()
         self.pos += 1
-        while (self.pos < len(self.text) and self.text[self.pos] != '"'):
-            lexeme += self.text[self.pos]
-            self.pos += 1
         return lexeme
 
     def read_keyword(self):
-        curr = ''
-        while (self.pos < len(self.text) and self.text[self.pos].isalpha()):
-            curr += self.text[self.pos]
-            self.pos += 1
-        self.pos -= 1
-        if curr == 'if':
-            return Token(Clazz.IF, curr)
-        elif curr == 'else':
-            return Token(Clazz.ELSE, curr)
-        elif curr == 'while':
-            return Token(Clazz.WHILE, curr)
-        elif curr == 'for':
-            return Token(Clazz.FOR, curr)
-        elif curr == 'break':
-            return Token(Clazz.BREAK, curr)
-        elif curr == 'continue':
-            return Token(Clazz.CONTINUE, curr)
-        elif curr == 'return':
-            return Token(Clazz.RETURN, curr)
-        elif curr == 'main':
-            return Token(Clazz.MAIN, curr)
-        elif curr == 'int' or curr == 'char' or curr == 'void':
-            return Token(Clazz.TYPE, curr)
-        return Token(Clazz.ID, curr)
+        lexeme = self.text[self.pos]
+        while self.pos + 1 < self.len and self.text[self.pos+1].isalpha():
+            lexeme += self.next_char()
+        if lexeme == 'if':
+            return Token(Clazz.IF, lexeme)
+        elif lexeme == 'else':
+            return Token(Clazz.ELSE, lexeme)
+        elif lexeme == 'while':
+            return Token(Clazz.WHILE, lexeme)
+        elif lexeme == 'for':
+            return Token(Clazz.FOR, lexeme)
+        elif lexeme == 'break':
+            return Token(Clazz.BREAK, lexeme)
+        elif lexeme == 'continue':
+            return Token(Clazz.CONTINUE, lexeme)
+        elif lexeme == 'return':
+            return Token(Clazz.RETURN, lexeme)
+        elif lexeme == 'main':
+            return Token(Clazz.MAIN, lexeme)
+        elif lexeme == 'int' or lexeme == 'char' or lexeme == 'void':
+            return Token(Clazz.TYPE, lexeme)
+        return Token(Clazz.ID, lexeme)
+
+    def next_char(self):
+        self.pos += 1
+        if self.pos >= self.len:
+            return None
+        return self.text[self.pos]
 
     def next_token(self):
         self.read_space()
-        if self.pos >= len(self.text):
-            return Token(Clazz.EOF, None)
-        curr = self.text[self.pos]
+        curr = self.next_char()
+        if curr is None:
+            return Token(Clazz.EOF, curr)
         token = None
         if curr.isalpha():
             token = self.read_keyword()
@@ -83,26 +78,26 @@ class Lexer():
         elif curr == '%':
             token = Token(Clazz.PERCENT, curr)
         elif curr == '&':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '&':
                 token = Token(Clazz.AND, curr)
             else:
                 self.die(curr)
         elif curr == '|':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '|':
                 token = Token(Clazz.OR, curr)
             else:
                 self.die(curr)
         elif curr == '!':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '=':
                 token = Token(Clazz.NEQ, '!=')
             else:
                 token = Token(Clazz.NOT, '!')
                 self.pos -= 1
         elif curr == '=':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '=':
                 token = Token(Clazz.EQ, '==')
             else:
@@ -113,13 +108,13 @@ class Lexer():
         elif curr == '>':
             token = Token(Clazz.GT, curr)
         elif curr == '<':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '=':
                 token = Token(Clazz.LTE, curr)
             else:
                 self.die(curr)
         elif curr == '>':
-            curr = self.read_char()
+            curr = self.next_char()
             if curr == '=':
                 token = Token(Clazz.GTE, curr)
             else:
@@ -139,10 +134,9 @@ class Lexer():
         elif curr == ';':
             token = Token(Clazz.SEMICOLON, curr)
         elif curr == ',':
-            token = Token(Clazz.SEMICOLON, curr)
+            token = Token(Clazz.COMMA, curr)
         else:
             self.die(curr)
-        self.pos += 1
         return token
 
     def die(self, char):
