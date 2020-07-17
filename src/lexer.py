@@ -33,7 +33,7 @@ class Lexer():
 
     def read_keyword(self):
         lexeme = self.text[self.pos]
-        while self.pos + 1 < self.len and self.text[self.pos+1].isalpha():
+        while self.pos + 1 < self.len and self.text[self.pos+1].isalnum():
             lexeme += self.next_char()
         if lexeme == 'if':
             return Token(Clazz.IF, lexeme)

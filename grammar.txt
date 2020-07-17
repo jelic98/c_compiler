@@ -1,10 +1,13 @@
 MAIN -> 'int' 'main' '(' ')' '{' MAIN_BLOCK RET '}'
-MAIN_BLOCK -> ( DECL_GLOBAL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
+MAIN_BLOCK -> ( DECL_GLOBAL | ARRAY_DECL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
 
 DECL_GLOBAL -> TYPE ID ( '=' CONST )? ';'
 DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
 ASSIGN_GLOBAL -> ID '=' ( CONST ) ';'
 ASSIGN_LOCAL -> ID '=' ( EXPR ) ';'
+
+ARRAY_DECL -> TYPE ID '[' ( INT )? ']' ( '=' ARRAY_INIT )? ';'
+ARRAY_INIT = ( STRING | '{' ( NUMBER ) ( ',' NUMBER )* '}' )
 
 STAT -> STAT_IF | STAT_WHILE | STAT_FOR
 STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' 'if' '{' BLOCK'}' )* ( 'else' '{' BLOCK '}' )?
@@ -15,7 +18,7 @@ FUNC_DECL -> TYPE ID '(' PARAMS ')' ';'
 FUNC_IMPL -> TYPE ID '(' PARAMS ')' '{' ( INSTR | RET )* ( RET )? '}'
 FUNC_CALL -> TYPE ID '(' ARGS ')' ';'
 
-INSTR -> ( DECL_LOCAL | ASSIGN | FUNC_CALL | STAT )
+INSTR -> ( DECL_LOCAL | ARRAY_DECL | ASSIGN | FUNC_CALL | STAT )
 JUMP -> ( 'break' | 'continue' ) ';'
 RET -> 'return' ( EXPR )? ';'
 
@@ -32,6 +35,7 @@ LOGIC_FACT -> ( '!' )? ( ( '=' | '!=' | '<' | '>' | '<=' | '>=' ) '(' LOGIC_EXPR
 
 TYPE -> 'int' | 'char' | 'void'
 ARRAY_ELEM -> ID ( '[' ( ID | EXPR ) ']' )+
-CONST -> ( INT | STRING )
+NUMBER -> ( INT | CHAR )
+CONST -> ( NUMBER | STRING )
 
-ID, INT, STRING, PATH -> ...
+ID, INT, CHAR, STRING -> ...
