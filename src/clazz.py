@@ -1,49 +1,48 @@
-import enum
+from enum import Enum, auto
 
-class Clazz(enum.Enum):
-    PLUS = 1
-    MINUS = 2
-    STAR = 3
-    FWDSLASH = 4
-    PERCENT = 5
+class Clazz(Enum):
+    PLUS = auto()
+    MINUS = auto()
+    STAR = auto()
+    FWDSLASH = auto()
+    PERCENT = auto()
 
-    OR = 6
-    AND = 7
-    NOT = 8
+    OR = auto()
+    AND = auto()
+    NOT = auto()
 
-    EQ = 9
-    NEQ = 10
-    LT = 11
-    GT = 12
-    LTE = 13
-    GTE = 14
+    EQ = auto()
+    NEQ = auto()
+    LT = auto()
+    GT = auto()
+    LTE = auto()
+    GTE = auto()
 
-    LPAREN = 15
-    RPAREN = 16
-    LBRACKET = 17
-    RBRACKET = 18
-    LBRACE = 19
-    RBRACE = 20
+    LPAREN = auto()
+    RPAREN = auto()
+    LBRACKET = auto()
+    RBRACKET = auto()
+    LBRACE = auto()
+    RBRACE = auto()
 
-    ASSIGN = 21
-    SEMICOLON = 22
-    COMMA = 23
+    ASSIGN = auto()
+    SEMICOLON = auto()
+    COMMA = auto()
     
-    TYPE = 24
-    INT = 25
-    CHAR = 26
-    STRING = 27
-    VOID = 28
+    TYPE = auto()
+    INT = auto()
+    CHAR = auto()
+    STRING = auto()
 
-    IF = 29
-    ELSE = 30
-    WHILE = 31
-    FOR = 32
+    IF = auto()
+    ELSE = auto()
+    WHILE = auto()
+    FOR = auto()
 
-    BREAK = 33
-    CONTINUE = 34
-    RETURN = 35
+    BREAK = auto()
+    CONTINUE = auto()
+    RETURN = auto()
 
-    ID = 36
-    MAIN = 37
-    EOF = 38
+    ID = auto()
+    MAIN = auto()
+    EOF = auto()

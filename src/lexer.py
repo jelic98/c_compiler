@@ -18,6 +18,12 @@ class Lexer():
             lexeme += self.next_char()
         return int(lexeme)
 
+    def read_char(self):
+        self.pos += 1
+        lexeme = self.text[self.pos]
+        self.pos += 1
+        return lexeme
+
     def read_string(self):
         lexeme = ''
         while self.pos + 1 < self.len and self.text[self.pos+1] != '"':
@@ -65,6 +71,8 @@ class Lexer():
             token = self.read_keyword()
         elif curr.isdigit():
             token = Token(Clazz.INT, self.read_int())
+        elif curr == '\'':
+            token = Token(Clazz.CHAR, self.read_char())
         elif curr == '"':
             token = Token(Clazz.STRING, self.read_string())
         elif curr == '+':

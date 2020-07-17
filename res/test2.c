@@ -1,9 +1,9 @@
 int main() {
-	int a;
+	char a;
 	int bcd;
 	int ef;
 
-	a = 12;
+	a = 'z';
 	bcd = 345;
 	ef = a + bcd;
 
