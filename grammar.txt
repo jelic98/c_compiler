@@ -1,0 +1,38 @@
+PROGRAM -> '#program' PROGRAM_BLOCK '##program'
+PROGRAM_BLOCK -> ( DECL_GLOBAL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
+
+DECL_GLOBAL -> TYPE ID ( '=' CONST )? ';'
+DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
+ASSIGN_GLOBAL -> ID '=' ( CONST ) ';'
+ASSIGN_LOCAL -> ID '=' ( EXPR ) ';'
+
+STAT -> STAT_IF | STAT_WHILE
+STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' 'if' '{' BLOCK'}' )* ( 'else' '{' BLOCK '}' )?
+STAT_WHILE -> 'while' '(' LOGIC_EXPR ')' '{' ( INSTR | JUMP )* '}'
+
+FUNC_DECL -> TYPE ID '(' PARAMS ')' ';'
+FUNC_IMPL -> TYPE ID '(' PARAMS ')' '{' ( INSTR | RET )* ( RET )? '}'
+FUNC_CALL -> TYPE ID '(' ARGS ')' ';'
+
+INSTR -> ( DECL_LOCAL | ASSIGN | FUNC_CALL | STAT)
+JUMP -> ( 'break' | 'continue' ) ';'
+RET -> 'return' ( EXPR )? ';'
+
+PARAMS -> ( PARAM )? ( ',' PARAM )*
+PARAM -> TYPE ID
+ARGS -> ( ARG )? ( ',' ARG )*
+ARG -> EXPR | STRING
+
+EXPR -> TERM ( ( '+' | '-' ) TERM )*
+TERM -> FACT ( ( '*' | '/' | '%' ) FACT )*
+FACT -> ( '-' )? ( CONST | ID | FUNC_CALL | ARRAY_ELEM | '(' EXPR ')' )
+
+LOGIC_EXPR -> LOGIC_TERM ( '||' LOGIC_TERM )*
+LOGIC_TERM -> LOGIC_FACT ( '&&' LOGIC_FACT )*
+LOGIC_FACT -> ( '!' )? ( ( '=' | '!=' | '<' | '>' | '<=' | '>=' ) '(' LOGIC_EXPR ')' )
+
+TYPE -> 'int' | 'char' | 'void'
+ARRAY_ELEM -> ID ( '[' ( ID | EXPR ) ']' )+
+CONST -> ( INT | STRING )
+
+ID, INT, STRING -> ...
