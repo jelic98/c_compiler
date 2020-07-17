@@ -1,20 +1,19 @@
-from src.clazz import Clazz
-from src.token import Token
+from src.token import Class, Token
 
 
-class Lexer():
+class Lexer:
     def __init__(self, text):
         self.text = text
         self.len = len(text)
         self.pos = -1
 
     def read_space(self):
-        while self.pos + 1 < self.len and self.text[self.pos+1].isspace():
+        while self.pos + 1 < self.len and self.text[self.pos + 1].isspace():
             self.next_char()
 
     def read_int(self):
         lexeme = self.text[self.pos]
-        while self.pos + 1 < self.len and self.text[self.pos+1].isdigit():
+        while self.pos + 1 < self.len and self.text[self.pos + 1].isdigit():
             lexeme += self.next_char()
         return int(lexeme)
 
@@ -26,14 +25,14 @@ class Lexer():
 
     def read_string(self):
         lexeme = ''
-        while self.pos + 1 < self.len and self.text[self.pos+1] != '"':
+        while self.pos + 1 < self.len and self.text[self.pos + 1] != '"':
             lexeme += self.next_char()
         self.pos += 1
         return lexeme
 
     def read_keyword(self):
         lexeme = self.text[self.pos]
-        while self.pos + 1 < self.len and self.text[self.pos+1].isalnum():
+        while self.pos + 1 < self.len and self.text[self.pos + 1].isalnum():
             lexeme += self.next_char()
         if lexeme == 'if':
             return Token(Clazz.IF, lexeme)
