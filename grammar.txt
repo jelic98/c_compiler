@@ -1,9 +1,5 @@
-MAIN -> DIRS 'int' 'main' '(' ')' '{' MAIN_BLOCK RET '}'
+MAIN -> 'int' 'main' '(' ')' '{' MAIN_BLOCK RET '}'
 MAIN_BLOCK -> ( DECL_GLOBAL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
-
-DIRS -> ( INCLUDE )*
-INCLUDE -> '#include' LIB
-LIB -> ( '<' PATH '>' | '"' PATH '"' )
 
 DECL_GLOBAL -> TYPE ID ( '=' CONST )? ';'
 DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
