@@ -8,16 +8,15 @@ class Program(Node):
 
 
 class Decl(Node):
-    def __init__(self, type_, name, expr):
+    def __init__(self, type_, id_):
         self.type_ = type_
-        self.name = name
-        self.expr = expr
+        self.id_ = id_
 
 
 class ArrayDecl(Node):
-    def __init__(self, type_, name, size, elems):
+    def __init__(self, type_, id_, size, elems):
         self.type_ = type_
-        self.name = name
+        self.id_ = id_
         self.size = size
         self.elems = elems
 
@@ -29,51 +28,56 @@ class ArrayElem(Node):
 
 
 class Assign(Node):
-    def __init__(self, name, expr):
-        self.name = neame
+    def __init__(self, id_, expr):
+        self.id_ = id_
         self.expr = expr
 
 
 class If(Node):
-    def __init__(self, cond, elses):
+    def __init__(self, cond, true, false):
         self.cond = cond
-        self.body = body
-        self.elses = elses
+        self.true = true
+        self.false = false
 
 
 class While(Node):
-    def __init__(self, cond, body):
+    def __init__(self, cond, block):
         self.cond = cond
-        self.body = body
+        self.block = block
 
 
 class For(Node):
-    def __init__(self, init, cond, step, body):
+    def __init__(self, init, cond, step, block):
         self.init = init
         self.cond = cond
         self.step = step
-        self.body = body
+        self.block = block
 
 
 class FuncDecl(Node):
-    def __init__(self, type_, name, params):
+    def __init__(self, type_, id_, params):
         self.type_ = type_
-        self.name = name
+        self.id_ = id_
         self.params = params
 
 
 class FuncImpl(Node):
-    def __init__(self, type_, name, params, body):
+    def __init__(self, type_, id_, params, block):
         self.type_ = type_
-        self.name = name
+        self.id_ = id_
         self.params = params
-        self.body = body
+        self.block = block
 
 
 class FuncCall(Node):
-    def __init__(self, name, args):
-        self.name = name
+    def __init__(self, id_, args):
+        self.id_ = id_
         self.args = args
+
+
+class Block(Node):
+    def __init__(self, block):
+        self.block = block
 
 
 class Params(Node):

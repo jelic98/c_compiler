@@ -5,12 +5,12 @@ DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
 ASSIGN_GLOBAL -> ID '=' ( CONST ) ';'
 ASSIGN_LOCAL -> ID '=' ( EXPR ) ';'
 
-ARRAY_DECL -> TYPE ID '[' ( INT )? ']' ( '=' ARRAY_INIT )? ';'
+ARRAY_DECL -> TYPE ID '[' ( EXPR )? ']' ( '=' ARRAY_INIT )? ';'
 ARRAY_INIT = ( STRING | '{' ( NUMBER ) ( ',' NUMBER )* '}' )
 ARRAY_ELEM -> ID ( '[' ( ID | EXPR ) ']' )+
 
 STAT -> STAT_IF | STAT_WHILE | STAT_FOR
-STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' 'if' '{' BLOCK'}' )* ( 'else' '{' BLOCK '}' )?
+STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' '{' BLOCK '}' )?
 STAT_WHILE -> 'while' '(' LOGIC_EXPR ')' '{' ( INSTR | JUMP )* '}'
 STAT_FOR -> 'for' '(' ASSIGN_LOCAL ';' LOGIC_EXPR ';' EXPR ')' '{' ( INSTR | JUMP )* '}'
 
