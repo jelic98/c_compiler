@@ -44,7 +44,6 @@ class Class(Enum):
     RETURN = auto()
 
     ID = auto()
-    MAIN = auto()
     EOF = auto()
 
 class Token:

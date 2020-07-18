@@ -1,5 +1,4 @@
-MAIN -> 'int' 'main' '(' ')' '{' MAIN_BLOCK RET '}'
-MAIN_BLOCK -> ( DECL_GLOBAL | ARRAY_DECL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
+PROGRAM -> ( DECL_GLOBAL | ARRAY_DECL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
 
 DECL_GLOBAL -> TYPE ID ( '=' CONST )? ';'
 DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
@@ -8,6 +7,7 @@ ASSIGN_LOCAL -> ID '=' ( EXPR ) ';'
 
 ARRAY_DECL -> TYPE ID '[' ( INT )? ']' ( '=' ARRAY_INIT )? ';'
 ARRAY_INIT = ( STRING | '{' ( NUMBER ) ( ',' NUMBER )* '}' )
+ARRAY_ELEM -> ID ( '[' ( ID | EXPR ) ']' )+
 
 STAT -> STAT_IF | STAT_WHILE | STAT_FOR
 STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' 'if' '{' BLOCK'}' )* ( 'else' '{' BLOCK '}' )?
@@ -34,7 +34,6 @@ LOGIC_TERM -> LOGIC_FACT ( '&&' LOGIC_FACT )*
 LOGIC_FACT -> ( '!' )? ( ( '=' | '!=' | '<' | '>' | '<=' | '>=' ) '(' LOGIC_EXPR ')' )
 
 TYPE -> 'int' | 'char' | 'void'
-ARRAY_ELEM -> ID ( '[' ( ID | EXPR ) ']' )+
 NUMBER -> ( INT | CHAR )
 CONST -> ( NUMBER | STRING )
 

@@ -48,8 +48,6 @@ class Lexer:
             return Token(Clazz.CONTINUE, lexeme)
         elif lexeme == 'return':
             return Token(Clazz.RETURN, lexeme)
-        elif lexeme == 'main':
-            return Token(Clazz.MAIN, lexeme)
         elif lexeme == 'int' or lexeme == 'char' or lexeme == 'void':
             return Token(Clazz.TYPE, lexeme)
         return Token(Clazz.ID, lexeme)
