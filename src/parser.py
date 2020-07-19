@@ -1,6 +1,8 @@
 from src.token import Class
+from src.nodes import *
 from functools import wraps
 import pickle
+import traceback
 
 
 class Parser:
@@ -25,13 +27,13 @@ class Parser:
             self.die_type(class_.name, self.curr.class_.name)
 
     def program(self):
-        program = []
+        nodes = []
         while self.curr.class_ != Class.EOF:
             if self.curr.class_ == Class.TYPE:
-                block.append(self.decl())
+                nodes.append(self.decl())
             else:
                 self.die_deriv(program.__name__)
-        return Program(program)
+        return Program(nodes)
 
     def if_(self):
         self.eat(Class.IF)
@@ -102,8 +104,7 @@ class Parser:
             self.eat(Class.SEMICOLON)
             return Decl(type_, id_)
 
-    def block():
-        self.eat(Class.LBRACE)
+    def block(self):
         block = []
         while self.curr.class_ != Class.RBRACE:
             if self.curr.class_ == Class.IF:
@@ -125,11 +126,9 @@ class Parser:
                 self.eat(Class.SEMICOLON)
             else:
                 self.die_deriv(program.__name__)
-        self.eat(Class.RBRACE)
         return Block(block)
 
-    def params():
-        self.eat(Class.LPAREN)
+    def params(self):
         params = []
         while self.curr.class_ != Class.RPAREN:
             if len(params) > 0:
@@ -137,11 +136,9 @@ class Parser:
             type_ = self.type_()
             id_ = self.id_()
             params.append(Decl(type_, id_))
-        self.eat(Class.RPAREN)
         return Params(params)
 
-    def args():
-        self.eat(Class.LPAREN)
+    def args(self):
         args = []
         while self.curr.class_ != Class.RPAREN:
             if len(args) > 0:
@@ -153,7 +150,6 @@ class Parser:
                 self.eat(Class.CHAR)
             elif self.curr.class_ == Class.STRING:
                 self.eat(Class.STRING)
-        self.eat(Class.RPAREN)
         return Args(args)
 
     def return_(self):
@@ -180,7 +176,7 @@ class Parser:
     def id_(self):
         id_ = Id(self.curr.lexeme)
         self.eat(Class.ID)
-        if self.curr.class_ == Class.LPAREN:
+        if self.curr.class_ == Class.LPAREN and self.is_func_call():
             self.eat(Class.LPAREN)
             args = self.args()
             self.eat(Class.RPAREN)
@@ -197,6 +193,13 @@ class Parser:
                 return Assign(id_, expr)
             else:
                 return id_
+
+    @restorable
+    def is_func_call(self):
+        self.eat(Class.LPAREN)
+        self.args()
+        self.eat(Class.RPAREN)
+        return self.curr.class_ == Class.SEMICOLON
 
     def factor(self):
         if self.curr.class_ == Class.INT:

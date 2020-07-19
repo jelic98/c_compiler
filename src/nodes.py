@@ -1,10 +1,10 @@
-class Node:
+class Node():
     pass
 
 
 class Program(Node):
-    def __init__(self, program):
-        self.program = program
+    def __init__(self, nodes):
+        self.nodes = nodes
 
 
 class Decl(Node):

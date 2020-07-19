@@ -35,22 +35,22 @@ class Lexer:
         while self.pos + 1 < self.len and self.text[self.pos + 1].isalnum():
             lexeme += self.next_char()
         if lexeme == 'if':
-            return Token(Clazz.IF, lexeme)
+            return Token(Class.IF, lexeme)
         elif lexeme == 'else':
-            return Token(Clazz.ELSE, lexeme)
+            return Token(Class.ELSE, lexeme)
         elif lexeme == 'while':
-            return Token(Clazz.WHILE, lexeme)
+            return Token(Class.WHILE, lexeme)
         elif lexeme == 'for':
-            return Token(Clazz.FOR, lexeme)
+            return Token(Class.FOR, lexeme)
         elif lexeme == 'break':
-            return Token(Clazz.BREAK, lexeme)
+            return Token(Class.BREAK, lexeme)
         elif lexeme == 'continue':
-            return Token(Clazz.CONTINUE, lexeme)
+            return Token(Class.CONTINUE, lexeme)
         elif lexeme == 'return':
-            return Token(Clazz.RETURN, lexeme)
+            return Token(Class.RETURN, lexeme)
         elif lexeme == 'int' or lexeme == 'char' or lexeme == 'void':
-            return Token(Clazz.TYPE, lexeme)
-        return Token(Clazz.ID, lexeme)
+            return Token(Class.TYPE, lexeme)
+        return Token(Class.ID, lexeme)
 
     def next_char(self):
         self.pos += 1
@@ -62,87 +62,87 @@ class Lexer:
         self.read_space()
         curr = self.next_char()
         if curr is None:
-            return Token(Clazz.EOF, curr)
+            return Token(Class.EOF, curr)
         token = None
         if curr.isalpha():
             token = self.read_keyword()
         elif curr.isdigit():
-            token = Token(Clazz.INT, self.read_int())
+            token = Token(Class.INT, self.read_int())
         elif curr == '\'':
-            token = Token(Clazz.CHAR, self.read_char())
+            token = Token(Class.CHAR, self.read_char())
         elif curr == '"':
-            token = Token(Clazz.STRING, self.read_string())
+            token = Token(Class.STRING, self.read_string())
         elif curr == '+':
-            token = Token(Clazz.PLUS, curr)
+            token = Token(Class.PLUS, curr)
         elif curr == '-':
-            token = Token(Clazz.MINUS, curr)
+            token = Token(Class.MINUS, curr)
         elif curr == '*':
-            token = Token(Clazz.STAR, curr)
+            token = Token(Class.STAR, curr)
         elif curr == '/':
-            token = Token(Clazz.FWDSLASH, curr)
+            token = Token(Class.FWDSLASH, curr)
         elif curr == '%':
-            token = Token(Clazz.PERCENT, curr)
+            token = Token(Class.PERCENT, curr)
         elif curr == '&':
             curr = self.next_char()
             if curr == '&':
-                token = Token(Clazz.AND, curr)
+                token = Token(Class.AND, curr)
             else:
                 self.die(curr)
         elif curr == '|':
             curr = self.next_char()
             if curr == '|':
-                token = Token(Clazz.OR, curr)
+                token = Token(Class.OR, curr)
             else:
                 self.die(curr)
         elif curr == '!':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Clazz.NEQ, '!=')
+                token = Token(Class.NEQ, '!=')
             else:
-                token = Token(Clazz.NOT, '!')
+                token = Token(Class.NOT, '!')
                 self.pos -= 1
         elif curr == '=':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Clazz.EQ, '==')
+                token = Token(Class.EQ, '==')
             else:
-                token = Token(Clazz.ASSIGN, '=')
+                token = Token(Class.ASSIGN, '=')
                 self.pos -= 1
         elif curr == '<':
-            token = Token(Clazz.LT, curr)
+            token = Token(Class.LT, curr)
         elif curr == '>':
-            token = Token(Clazz.GT, curr)
+            token = Token(Class.GT, curr)
         elif curr == '<':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Clazz.LTE, curr)
+                token = Token(Class.LTE, curr)
             else:
                 self.die(curr)
         elif curr == '>':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Clazz.GTE, curr)
+                token = Token(Class.GTE, curr)
             else:
                 self.die(curr)
         elif curr == '(':
-            token = Token(Clazz.LPAREN, curr)
+            token = Token(Class.LPAREN, curr)
         elif curr == ')':
-            token = Token(Clazz.RPAREN, curr)
+            token = Token(Class.RPAREN, curr)
         elif curr == '[':
-            token = Token(Clazz.LBRACKET, curr)
+            token = Token(Class.LBRACKET, curr)
         elif curr == ']':
-            token = Token(Clazz.RBRACKET, curr)
+            token = Token(Class.RBRACKET, curr)
         elif curr == '{':
-            token = Token(Clazz.LBRACE, curr)
+            token = Token(Class.LBRACE, curr)
         elif curr == '}':
-            token = Token(Clazz.RBRACE, curr)
+            token = Token(Class.RBRACE, curr)
         elif curr == ';':
-            token = Token(Clazz.SEMICOLON, curr)
+            token = Token(Class.SEMICOLON, curr)
         elif curr == ',':
-            token = Token(Clazz.COMMA, curr)
+            token = Token(Class.COMMA, curr)
         else:
             self.die(curr)
         return token
 
     def die(self, char):
-        raise SystemExit("Unexpected character {}".format(char))
+        raise SystemExit("Unexpected character: {}".format(char))
