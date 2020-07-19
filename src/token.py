@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class Class(Enum):
     PLUS = auto()
     MINUS = auto()
@@ -28,7 +29,7 @@ class Class(Enum):
     ASSIGN = auto()
     SEMICOLON = auto()
     COMMA = auto()
-    
+
     TYPE = auto()
     INT = auto()
     CHAR = auto()
@@ -45,6 +46,7 @@ class Class(Enum):
 
     ID = auto()
     EOF = auto()
+
 
 class Token:
     def __init__(self, class_, lexeme):

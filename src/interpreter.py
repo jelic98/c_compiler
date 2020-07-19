@@ -1,4 +1,3 @@
-import textwrap
 from graphviz import Digraph
 
 

@@ -2,7 +2,6 @@ from src.token import Class
 from src.nodes import *
 from functools import wraps
 import pickle
-import traceback
 
 
 class Parser:
