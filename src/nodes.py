@@ -3,8 +3,8 @@ class Node:
 
 
 class Program(Node):
-    def __init__(self, nodes):
-        self.nodes = nodes
+    def __init__(self, program):
+        self.program = program
 
 
 class Decl(Node):
