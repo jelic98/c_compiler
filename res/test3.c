@@ -1,3 +1,5 @@
+int x;
+
 int main() {
 	int arr1[3];
 	int arr2[] = {1, 23, 456};
