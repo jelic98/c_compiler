@@ -1,4 +1,5 @@
 from src.visitor import Visitor
+from src.nodes import *
 
 
 class Symbolizer(Visitor):
@@ -6,7 +7,9 @@ class Symbolizer(Visitor):
         self.ast = ast
 
     def visit_Program(self, parent, node):
-        pass
+        for n in node.nodes:
+            if isinstance(n, Decl):
+                pass
 
     def visit_Decl(self, parent, node):
         pass

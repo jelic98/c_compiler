@@ -27,15 +27,15 @@ def main():
         grapher.graph()
 
         symbolizer = Symbolizer(ast)
-        symbols = symbolizer.symbolize()
+        symbolizer.symbolize()
 
-        optimizer = Optimizer(ast, symbols)
+        optimizer = Optimizer(ast)
         optimizer.optimize()
 
-        generator = Generator(ast, symbols)
+        generator = Generator(ast)
         generator.generate()
 
-        runner = Runner(ast, symbols)
+        runner = Runner(ast)
         runner.run()
 
 

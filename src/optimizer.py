@@ -2,9 +2,8 @@ from src.visitor import Visitor
 
 
 class Optimizer(Visitor):
-    def __init__(self, ast, symbols):
+    def __init__(self, ast):
         self.ast = ast
-        self.symbols = symbols
 
     def visit_Program(self, parent, node):
         pass
