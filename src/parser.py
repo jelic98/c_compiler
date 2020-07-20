@@ -213,14 +213,17 @@ class Parser:
 
     def factor(self):
         if self.curr.class_ == Class.INT:
+            value = Int(self.curr.lexeme)
             self.eat(Class.INT)
-            return Int(self.curr.lexeme)
+            return value
         elif self.curr.class_ == Class.CHAR:
+            value = Char(self.curr.lexeme)
             self.eat(Class.CHAR)
-            return Char(self.curr.lexeme)
+            return value
         elif self.curr.class_ == Class.STRING:
+            value = String(self.curr.lexeme)
             self.eat(Class.STRING)
-            return String(self.curr.lexeme)
+            return value
         elif self.curr.class_ == Class.ID:
             return self.id_()
         elif self.curr.class_ in [Class.MINUS, Class.NOT]:
@@ -251,71 +254,84 @@ class Parser:
         first = self.factor()
         while self.curr.class_ in [Class.STAR, Class.FWDSLASH, Class.PERCENT]:
             if self.curr.class_ == Class.STAR:
+                op = self.curr.lexeme
                 self.eat(Class.STAR)
                 second = self.factor()
-                first = BinOp(self.curr.lexeme, first, second)
+                first = BinOp(op, first, second)
             elif self.curr.class_ == Class.FWDSLASH:
+                op = self.curr.lexeme
                 self.eat(Class.FWDSLASH)
                 second = self.factor()
-                first = BinOp(self.curr.lexeme, first, second)
+                first = BinOp(op, first, second)
             elif self.curr.class_ == Class.PERCENT:
+                op = self.curr.lexeme
                 self.eat(Class.PERCENT)
                 second = self.factor()
-                first = BinOp(self.curr.lexeme, first, second)
+                first = BinOp(op, first, second)
         return first
 
     def expr(self):
         first = self.term()
         while self.curr.class_ in [Class.PLUS, Class.MINUS]:
             if self.curr.class_ == Class.PLUS:
+                op = self.curr.lexeme
                 self.eat(Class.PLUS)
                 second = self.term()
-                first = BinOp(self.curr.lexeme, first, second)
+                first = BinOp(op, first, second)
             elif self.curr.class_ == Class.MINUS:
+                op = self.curr.lexeme
                 self.eat(Class.MINUS)
                 second = self.term()
-                first = BinOp(self.curr.lexeme, first, second)
+                first = BinOp(op, first, second)
         return first
 
     def compare(self):
         first = self.expr()
         if self.curr.class_ == Class.EQ:
+            op = self.curr.lexeme
             self.eat(Class.EQ)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.NEQ:
+            op = self.curr.lexeme
             self.eat(Class.NEQ)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.LT:
+            op = self.curr.lexeme
             self.eat(Class.LT)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.GT:
+            op = self.curr.lexeme
             self.eat(Class.GT)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.LTE:
+            op = self.curr.lexeme
             self.eat(Class.LTE)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.GTE:
+            op = self.curr.lexeme
             self.eat(Class.GTE)
             second = self.expr()
-            return BinOp(self.curr.lexeme, first, second)
+            return BinOp(op, first, second)
         else:
             return first
 
     def logic(self):
         first = self.compare()
         if self.curr.class_ == Class.AND:
+            op = self.curr.lexeme
             self.eat(Class.AND)
             second = self.compare()
-            return BinOp('&&', first, second)
+            return BinOp(op, first, second)
         elif self.curr.class_ == Class.OR:
+            op = self.curr.lexeme
             self.eat(Class.OR)
             second = self.compare()
-            return BinOp('||', first, second)
+            return BinOp(op, first, second)
         else:
             return first
 

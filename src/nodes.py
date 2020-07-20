@@ -22,8 +22,8 @@ class ArrayDecl(Node):
 
 
 class ArrayElem(Node):
-    def __init__(self, array, index):
-        self.array = array
+    def __init__(self, id_, index):
+        self.id_ = id_
         self.index = index
 
 

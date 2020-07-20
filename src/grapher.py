@@ -11,10 +11,13 @@ class Grapher(Visitor):
         self.dot.node_attr['height'] = '0.1'
         self.dot.edge_attr['arrowsize'] = '0.5'
 
-    def add_node(self, parent, node):
+    def add_node(self, parent, node, name=None):
         node._index = self._count
         self._count += 1
-        self.dot.node('node{}'.format(node._index), type(node).__name__)
+        caption = type(node).__name__
+        if name is not None:
+            caption = "{} : {}".format(caption, name)
+        self.dot.node('node{}'.format(node._index), caption)
         if parent is not None:
             self.add_edge(parent, node)
 
@@ -34,9 +37,17 @@ class Grapher(Visitor):
 
     def visit_ArrayDecl(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.type_)
+        self.visit(node, node.id_)
+        if node.size is not None:
+            self.visit(node, node.size)
+        if node.elems is not None:
+            self.visit(node, node.elems)
 
     def visit_ArrayElem(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.id_)
+        self.visit(node, node.index)
 
     def visit_Assign(self, parent, node):
         self.add_node(parent, node)
@@ -45,15 +56,27 @@ class Grapher(Visitor):
 
     def visit_If(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.cond)
+        self.visit(node, node.true)
+        self.visit(node, node.false)
 
     def visit_While(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.cond)
+        self.visit(node, node.block)
 
     def visit_For(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.init)
+        self.visit(node, node.cond)
+        self.visit(node, node.step)
+        self.visit(node, node.block)
 
     def visit_FuncDecl(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.type_)
+        self.visit(node, node.id_)
+        self.visit(node, node.params)
 
     def visit_FuncImpl(self, parent, node):
         self.add_node(parent, node)
@@ -64,6 +87,8 @@ class Grapher(Visitor):
 
     def visit_FuncCall(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.id_)
+        self.visit(node, node.args)
 
     def visit_Block(self, parent, node):
         self.add_node(parent, node)
@@ -72,12 +97,18 @@ class Grapher(Visitor):
 
     def visit_Params(self, parent, node):
         self.add_node(parent, node)
+        for p in node.params:
+            self.visit(node, p)
 
     def visit_Args(self, parent, node):
         self.add_node(parent, node)
+        for a in node.args:
+            self.visit(node, a)
 
     def visit_Elems(self, parent, node):
         self.add_node(parent, node)
+        for e in node.elems:
+            self.visit(node, e)
 
     def visit_Break(self, parent, node):
         self.add_node(parent, node)
@@ -87,29 +118,37 @@ class Grapher(Visitor):
 
     def visit_Return(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.expr)
 
     def visit_Type(self, parent, node):
-        self.add_node(parent, node)
+        name = node.value
+        self.add_node(parent, node, name)
 
     def visit_Int(self, parent, node):
-        self.add_node(parent, node)
+        name = node.value
+        self.add_node(parent, node, name)
 
     def visit_Char(self, parent, node):
-        self.add_node(parent, node)
+        name = node.value
+        self.add_node(parent, node, name)
 
     def visit_String(self, parent, node):
-        self.add_node(parent, node)
+        name = node.value
+        self.add_node(parent, node, name)
 
     def visit_Id(self, parent, node):
-        self.add_node(parent, node)
+        name = node.value
+        self.add_node(parent, node, name)
 
     def visit_BinOp(self, parent, node):
-        self.add_node(parent, node)
+        name = node.symbol
+        self.add_node(parent, node, name)
         self.visit(node, node.first)
         self.visit(node, node.second)
 
     def visit_UnOp(self, parent, node):
-        self.add_node(parent, node)
+        name = node.symbol
+        self.add_node(parent, node, name)
         self.visit(node, node.first)
 
     def graph(self):
