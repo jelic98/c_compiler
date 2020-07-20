@@ -29,6 +29,8 @@ class Grapher(Visitor):
 
     def visit_Decl(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.type_)
+        self.visit(node, node.id_)
 
     def visit_ArrayDecl(self, parent, node):
         self.add_node(parent, node)
@@ -38,6 +40,8 @@ class Grapher(Visitor):
 
     def visit_Assign(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.id_)
+        self.visit(node, node.expr)
 
     def visit_If(self, parent, node):
         self.add_node(parent, node)
@@ -63,11 +67,16 @@ class Grapher(Visitor):
 
     def visit_Block(self, parent, node):
         self.add_node(parent, node)
+        for n in node.nodes:
+            self.visit(node, n)
 
     def visit_Params(self, parent, node):
         self.add_node(parent, node)
 
     def visit_Args(self, parent, node):
+        self.add_node(parent, node)
+
+    def visit_Elems(self, parent, node):
         self.add_node(parent, node)
 
     def visit_Break(self, parent, node):
@@ -96,9 +105,12 @@ class Grapher(Visitor):
 
     def visit_BinOp(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.first)
+        self.visit(node, node.second)
 
     def visit_UnOp(self, parent, node):
         self.add_node(parent, node)
+        self.visit(node, node.first)
 
     def graph(self):
         program = self.parser.program()

@@ -8,6 +8,7 @@ class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         self.curr = self.lexer.next_token()
+        self.prev = None
 
     def restorable(call):
         @wraps(call)
@@ -21,6 +22,7 @@ class Parser:
 
     def eat(self, class_):
         if self.curr.class_ == class_:
+            self.prev = self.curr
             self.curr = self.lexer.next_token()
         else:
             self.die_type(class_.name, self.curr.class_.name)
@@ -31,8 +33,62 @@ class Parser:
             if self.curr.class_ == Class.TYPE:
                 nodes.append(self.decl())
             else:
-                self.die_deriv(program.__name__)
+                self.die_deriv(self.program.__name__)
         return Program(nodes)
+
+    def id_(self):
+        is_array_elem = self.prev.class_ != Class.TYPE
+        id_ = Id(self.curr.lexeme)
+        self.eat(Class.ID)
+        if self.curr.class_ == Class.LPAREN and self.is_func_call():
+            self.eat(Class.LPAREN)
+            args = self.args()
+            self.eat(Class.RPAREN)
+            return FuncCall(id_, args)
+        elif self.curr.class_ == Class.LBRACKET and is_array_elem:
+            self.eat(Class.LBRACKET)
+            index = self.expr()
+            self.eat(Class.RBRACKET)
+            id_ = ArrayElem(id_, index)
+        if self.curr.class_ == Class.ASSIGN:
+            self.eat(Class.ASSIGN)
+            expr = self.expr()
+            return Assign(id_, expr)
+        else:
+            return id_
+
+    def decl(self):
+        type_ = self.type_()
+        id_ = self.id_()
+        if self.curr.class_ == Class.LBRACKET:
+            self.eat(Class.LBRACKET)
+            size = None
+            if self.curr.class_ != Class.RBRACKET:
+                size = self.expr()
+            self.eat(Class.RBRACKET)
+            elems = None
+            if self.curr.class_ == Class.ASSIGN:
+                self.eat(Class.ASSIGN)
+                self.eat(Class.LBRACE)
+                elems = self.elems()
+                self.eat(Class.RBRACE)
+            self.eat(Class.SEMICOLON)
+            return ArrayDecl(type_, id_, size, elems)
+        elif self.curr.class_ == Class.LPAREN:
+            self.eat(Class.LPAREN)
+            params = self.params()
+            self.eat(Class.RPAREN)
+            if self.curr.class_ == Class.LBRACE:
+                self.eat(Class.LBRACE)
+                block = self.block()
+                self.eat(Class.RBRACE)
+                return FuncImpl(type_, id_, params, block)
+            else:
+                self.eat(Class.SEMICOLON)
+                return FuncDecl(type_, id_, params)
+        else:
+            self.eat(Class.SEMICOLON)
+            return Decl(type_, id_)
 
     def if_(self):
         self.eat(Class.IF)
@@ -61,71 +117,40 @@ class Parser:
     def for_(self):
         self.eat(Class.FOR)
         self.eat(Class.LPAREN)
-        init = self.assign()
+        init = self.id_()
         self.eat(Class.SEMICOLON)
         cond = self.logic()
         self.eat(Class.SEMICOLON)
-        step = self.expr()
+        step = self.id_()
         self.eat(Class.RPAREN)
         self.eat(Class.LBRACE)
         block = self.block()
         self.eat(Class.RBRACE)
         return For(init, cond, step, block)
 
-    def decl(self):
-        type_ = self.type_()
-        id_ = self.id_()
-        if self.curr.class_ == Class.LBRACKET:
-            self.eat(Class.LBRACKET)
-            size = self.expr()
-            elems = None
-            self.eat(Class.RBRACKET)
-            if self.curr.class_ == Class.ASSIGN:
-                self.eat(Class.ASSIGN)
-                self.eat(Class.LBRACE)
-                elems = self.args()
-                self.eat(Class.RBRACE)
-            self.eat(Class.SEMICOLON)
-            return ArrayDecl(type_, id_, size, elems)
-        elif self.curr.class_ == Class.LPAREN:
-            self.eat(Class.LPAREN)
-            params = self.params()
-            self.eat(Class.RPAREN)
-            if self.curr.class_ == Class.LBRACE:
-                self.eat(Class.LBRACE)
-                block = self.block()
-                self.eat(Class.RBRACE)
-                return FuncImpl(type_, id_, params, block)
-            else:
-                self.eat(Class.SEMICOLON)
-                return FuncDecl(type_, id_, params)
-        else:
-            self.eat(Class.SEMICOLON)
-            return Decl(type_, id_)
-
     def block(self):
-        block = []
+        nodes = []
         while self.curr.class_ != Class.RBRACE:
             if self.curr.class_ == Class.IF:
-                block.append(self.if_())
+                nodes.append(self.if_())
             elif self.curr.class_ == Class.WHILE:
-                block.append(self.while_())
+                nodes.append(self.while_())
             elif self.curr.class_ == Class.FOR:
-                block.append(self.for_())
+                nodes.append(self.for_())
             elif self.curr.class_ == Class.BREAK:
-                block.append(self.break_())
+                nodes.append(self.break_())
             elif self.curr.class_ == Class.CONTINUE:
-                block.append(self.continue_())
+                nodes.append(self.continue_())
             elif self.curr.class_ == Class.RETURN:
-                block.append(self.return_())
+                nodes.append(self.return_())
             elif self.curr.class_ == Class.TYPE:
-                block.append(self.decl())
+                nodes.append(self.decl())
             elif self.curr.class_ == Class.ID:
-                block.append(self.id_())
+                nodes.append(self.id_())
                 self.eat(Class.SEMICOLON)
             else:
-                self.die_deriv(program.__name__)
-        return Block(block)
+                self.die_deriv(self.block.__name__)
+        return Block(nodes)
 
     def params(self):
         params = []
@@ -142,7 +167,7 @@ class Parser:
         while self.curr.class_ != Class.RPAREN:
             if len(args) > 0:
                 self.eat(Class.COMMA)
-            args.append(self.logic())
+            args.append(self.expr())
             if self.curr.class_ == Class.INT:
                 self.eat(Class.INT)
             elif self.curr.class_ == Class.CHAR:
@@ -151,9 +176,23 @@ class Parser:
                 self.eat(Class.STRING)
         return Args(args)
 
+    def elems(self):
+        elems = []
+        while self.curr.class_ != Class.RBRACE:
+            if len(elems) > 0:
+                self.eat(Class.COMMA)
+            elems.append(self.expr())
+            if self.curr.class_ == Class.INT:
+                self.eat(Class.INT)
+            elif self.curr.class_ == Class.CHAR:
+                self.eat(Class.CHAR)
+            elif self.curr.class_ == Class.STRING:
+                self.eat(Class.STRING)
+        return Elems(elems)
+
     def return_(self):
         self.eat(Class.RETURN)
-        expr = self.logic()
+        expr = self.expr()
         self.eat(Class.SEMICOLON)
         return Return(expr)
 
@@ -171,34 +210,6 @@ class Parser:
         type_ = Type(self.curr.lexeme)
         self.eat(Class.TYPE)
         return type_
-
-    def id_(self):
-        id_ = Id(self.curr.lexeme)
-        self.eat(Class.ID)
-        if self.curr.class_ == Class.LPAREN and self.is_func_call():
-            self.eat(Class.LPAREN)
-            args = self.args()
-            self.eat(Class.RPAREN)
-            return FuncCall(id_, args)
-        else:
-            if self.curr.class_ == Class.LBRACKET:
-                self.eat(Class.LBRACKET)
-                index = self.expr()
-                self.eat(Class.RBRACKET)
-                return ArrayElem(id_, index)
-            elif self.curr.class_ == Class.ASSIGN:
-                self.eat(Class.ASSIGN)
-                expr = self.logic()
-                return Assign(id_, expr)
-            else:
-                return id_
-
-    @restorable
-    def is_func_call(self):
-        self.eat(Class.LPAREN)
-        self.args()
-        self.eat(Class.RPAREN)
-        return self.curr.class_ == Class.SEMICOLON
 
     def factor(self):
         if self.curr.class_ == Class.INT:
@@ -234,7 +245,7 @@ class Parser:
         elif self.curr.class_ == Class.ID:
             id_ = self.id_()
         else:
-            self.die_deriv(factor.__name__)
+            self.die_deriv(self.factor.__name__)
 
     def term(self):
         first = self.factor()
@@ -257,11 +268,11 @@ class Parser:
         first = self.term()
         while self.curr.class_ in [Class.PLUS, Class.MINUS]:
             if self.curr.class_ == Class.PLUS:
-                self.eat(PLUS)
+                self.eat(Class.PLUS)
                 second = self.term()
                 first = BinOp(self.curr.lexeme, first, second)
             elif self.curr.class_ == Class.MINUS:
-                self.eat(MINUS)
+                self.eat(Class.MINUS)
                 second = self.term()
                 first = BinOp(self.curr.lexeme, first, second)
         return first
@@ -308,11 +319,18 @@ class Parser:
         else:
             return first
 
+    @restorable
+    def is_func_call(self):
+        self.eat(Class.LPAREN)
+        self.args()
+        self.eat(Class.RPAREN)
+        return self.curr.class_ == Class.SEMICOLON
+
     def die(self, text):
         raise SystemExit(text)
 
     def die_deriv(self, fun):
-        nodes.append("Derivation error: {}".format(fun))
+        self.die("Derivation error: {}".format(fun))
 
     def die_type(self, expected, found):
         self.die("Expected: {}, Found: {}".format(expected, found))

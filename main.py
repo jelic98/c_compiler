@@ -34,7 +34,7 @@ def main():
 
     if not RUN:
         dirs = os.path.splitext(path)[0].split(os.sep)
-        dirs.insert(-1, 'graph')
+        dirs.insert(-2, 'out')
         graph = os.sep.join(dirs)
 
         s = Source(result, filename=graph, format='png')

@@ -47,6 +47,9 @@ class Runner(Visitor):
     def visit_Args(self, parent, node):
         pass
 
+    def visit_Elems(self, parent, node):
+        pass
+
     def visit_Break(self, parent, node):
         pass
 

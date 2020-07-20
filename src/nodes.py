@@ -76,8 +76,8 @@ class FuncCall(Node):
 
 
 class Block(Node):
-    def __init__(self, block):
-        self.block = block
+    def __init__(self, nodes):
+        self.nodes = nodes
 
 
 class Params(Node):
@@ -88,6 +88,11 @@ class Params(Node):
 class Args(Node):
     def __init__(self, args):
         self.args = args
+
+
+class Elems(Node):
+    def __init__(self, elems):
+        self.elems = elems
 
 
 class Break(Node):
