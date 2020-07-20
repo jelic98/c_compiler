@@ -1,5 +1,6 @@
 from src.visitor import Visitor
-from graphviz import Digraph
+import os
+from graphviz import Digraph, Source
 
 
 class Grapher(Visitor):
@@ -16,7 +17,7 @@ class Grapher(Visitor):
         self._count += 1
         caption = type(node).__name__
         if name is not None:
-            caption = "{} : {}".format(caption, name)
+            caption = '{} : {}'.format(caption, name)
         self.dot.node('node{}'.format(node._index), caption)
         if parent is not None:
             self.add_edge(parent, node)
@@ -154,4 +155,10 @@ class Grapher(Visitor):
     def graph(self):
         program = self.parser.program()
         self.visit(None, program)
-        return self.dot.source
+        path = os.path.dirname(os.path.realpath(__file__))
+        dirs = os.path.splitext(path)[0].split(os.sep)
+        dirs.insert(-1, 'out')
+        dirs[-1] = 'graph'
+        graph = os.sep.join(dirs)
+        s = Source(self.dot.source, filename=graph, format='png')
+        s.view()
