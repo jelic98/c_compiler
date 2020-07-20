@@ -19,8 +19,9 @@ def main():
         text = source.read()
 
         lexer = Lexer(text)
+        tokens = lexer.lex()
 
-        parser = Parser(lexer)
+        parser = Parser(tokens)
         ast = parser.parse()
 
         grapher = Grapher(ast)

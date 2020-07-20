@@ -144,5 +144,14 @@ class Lexer:
             self.die(curr)
         return token
 
+    def lex(self):
+        tokens = []
+        while True:
+            curr = self.next_token()
+            tokens.append(curr)
+            if curr.class_ == Class.EOF:
+                break
+        return tokens
+
     def die(self, char):
         raise SystemExit("Unexpected character: {}".format(char))

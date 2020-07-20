@@ -5,9 +5,9 @@ import pickle
 
 
 class Parser:
-    def __init__(self, lexer):
-        self.lexer = lexer
-        self.curr = self.lexer.next_token()
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.curr = tokens.pop(0)
         self.prev = None
 
     def restorable(call):
@@ -23,7 +23,7 @@ class Parser:
     def eat(self, class_):
         if self.curr.class_ == class_:
             self.prev = self.curr
-            self.curr = self.lexer.next_token()
+            self.curr = self.tokens.pop(0)
         else:
             self.die_type(class_.name, self.curr.class_.name)
 
