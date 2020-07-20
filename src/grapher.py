@@ -4,8 +4,8 @@ from graphviz import Digraph, Source
 
 
 class Grapher(Visitor):
-    def __init__(self, parser):
-        self.parser = parser
+    def __init__(self, ast):
+        self.ast = ast
         self._count = 1
         self.dot = Digraph()
         self.dot.node_attr['shape'] = 'box'
@@ -153,8 +153,7 @@ class Grapher(Visitor):
         self.visit(node, node.first)
 
     def graph(self):
-        program = self.parser.program()
-        self.visit(None, program)
+        self.visit(None, self.ast)
         path = os.path.dirname(os.path.realpath(__file__))
         dirs = os.path.splitext(path)[0].split(os.sep)
         dirs.insert(-1, 'out')

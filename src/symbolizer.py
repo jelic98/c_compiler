@@ -1,10 +1,9 @@
 from src.visitor import Visitor
 
 
-class Runner(Visitor):
-    def __init__(self, ast, symbols):
+class Symbolizer(Visitor):
+    def __init__(self, ast):
         self.ast = ast
-        self.symbols = symbols
 
     def visit_Program(self, parent, node):
         pass
@@ -81,5 +80,5 @@ class Runner(Visitor):
     def visit_UnOp(self, parent, node):
         pass
 
-    def run(self):
+    def symbolize(self):
         self.visit(None, self.ast)

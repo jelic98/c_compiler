@@ -1,7 +1,7 @@
 from src.visitor import Visitor
 
 
-class Runner(Visitor):
+class Optimizer(Visitor):
     def __init__(self, ast, symbols):
         self.ast = ast
         self.symbols = symbols
@@ -81,5 +81,5 @@ class Runner(Visitor):
     def visit_UnOp(self, parent, node):
         pass
 
-    def run(self):
+    def optimize(self):
         self.visit(None, self.ast)

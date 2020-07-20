@@ -342,6 +342,9 @@ class Parser:
         self.eat(Class.RPAREN)
         return self.curr.class_ == Class.SEMICOLON
 
+    def parse(self):
+        return self.program()
+
     def die(self, text):
         raise SystemExit(text)
 
