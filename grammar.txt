@@ -1,4 +1,4 @@
-PROGRAM -> ( DECL_GLOBAL | ARRAY_DECL | ASSIGN_GLOBAL | FUNC_DECL | FUNC_IMPL )*
+PROGRAM -> ( DECL_GLOBAL | ARRAY_DECL | ASSIGN_GLOBAL | FUNC_IMPL )*
 
 DECL_GLOBAL -> TYPE ID ( '=' CONST )? ';'
 DECL_LOCAL -> TYPE ID ( '=' EXPR )? ';'
@@ -14,7 +14,6 @@ STAT_IF -> 'if' '(' LOGIC_EXPR ')' '{' BLOCK '}' ( 'else' '{' BLOCK '}' )?
 STAT_WHILE -> 'while' '(' LOGIC_EXPR ')' '{' ( INSTR | JUMP )* '}'
 STAT_FOR -> 'for' '(' ASSIGN_LOCAL ';' LOGIC_EXPR ';' EXPR ')' '{' ( INSTR | JUMP )* '}'
 
-FUNC_DECL -> TYPE ID '(' PARAMS ')' ';'
 FUNC_IMPL -> TYPE ID '(' PARAMS ')' '{' ( INSTR | RET )* ( RET )? '}'
 FUNC_CALL -> TYPE ID '(' ARGS ')' ';'
 

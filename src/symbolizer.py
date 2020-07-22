@@ -3,21 +3,23 @@ from src.nodes import *
 
 
 class Symbol:
-    def __init__(self, id_, type_, value=None):
+    def __init__(self, id_, type_, value=None, params=None):
         self.id_ = id_
         self.type_ = type_
         self.value = value
+        self.params = params
 
     def __str__(self):
-        return "<{} {} {}>".format(self.id_, self.type_, self.value)
+        symbol = (self.id_, self.type_, self.value, self.params)
+        return "<{} {} {} {}>".format(*symbol)
 
 
 class Symbols:
     def __init__(self):
         self.symbols = {}
 
-    def put(self, id_, type_, value=None):
-        self.symbols[id_] = Symbol(id_, type_, value)
+    def put(self, id_, type_, value=None, params=None):
+        self.symbols[id_] = Symbol(id_, type_, value, params)
 
     def get(self, id_):
         return self.symbols[id_]
@@ -25,6 +27,8 @@ class Symbols:
     def __str__(self):
         out = ""
         for _, value in self.symbols.items():
+            if len(out) > 0:
+                out += "\n"
             out += str(value)
         return out
 
@@ -36,16 +40,13 @@ class Symbolizer(Visitor):
     def visit_Program(self, parent, node):
         node.symbols = Symbols()
         for n in node.nodes:
-            if isinstance(n, Decl):
-                node.symbols.put(n.id_.value, n.type_.value)
-            elif isinstance(n, FuncImpl):
-                pass
+            self.visit(node, n)
 
     def visit_Decl(self, parent, node):
-        pass
+        parent.symbols.put(node.id_.value, node.type_.value)
 
     def visit_ArrayDecl(self, parent, node):
-        pass
+        parent.symbols.put(node.id_.value, node.type_.value)
 
     def visit_ArrayElem(self, parent, node):
         pass
@@ -54,28 +55,34 @@ class Symbolizer(Visitor):
         pass
 
     def visit_If(self, parent, node):
-        pass
+        self.visit(node, node.true)
+        self.visit(node, node.false)
 
     def visit_While(self, parent, node):
-        pass
+        self.visit(node, node.block)
 
     def visit_For(self, parent, node):
-        pass
-
-    def visit_FuncDecl(self, parent, node):
-        pass
+        self.visit(node, node.block)
 
     def visit_FuncImpl(self, parent, node):
-        pass
+        parent.symbols.put(node.id_.value, node.type_.value)
+        self.visit(node, node.params)
+        node.block.symbols = node.params.symbols
+        node.params.symbols = None
+        self.visit(node, node.block)
 
     def visit_FuncCall(self, parent, node):
         pass
 
     def visit_Block(self, parent, node):
-        pass
+        node.symbols = Symbols()
+        for n in node.nodes:
+            self.visit(node, n)
 
     def visit_Params(self, parent, node):
-        pass
+        node.symbols = Symbols()
+        for p in node.params:
+            self.visit(node, p)
 
     def visit_Args(self, parent, node):
         pass

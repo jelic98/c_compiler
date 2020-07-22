@@ -54,13 +54,6 @@ class For(Node):
         self.block = block
 
 
-class FuncDecl(Node):
-    def __init__(self, type_, id_, params):
-        self.type_ = type_
-        self.id_ = id_
-        self.params = params
-
-
 class FuncImpl(Node):
     def __init__(self, type_, id_, params, block):
         self.type_ = type_

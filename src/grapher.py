@@ -73,12 +73,6 @@ class Grapher(Visitor):
         self.visit(node, node.step)
         self.visit(node, node.block)
 
-    def visit_FuncDecl(self, parent, node):
-        self.add_node(parent, node)
-        self.visit(node, node.type_)
-        self.visit(node, node.id_)
-        self.visit(node, node.params)
-
     def visit_FuncImpl(self, parent, node):
         self.add_node(parent, node)
         self.visit(node, node.type_)

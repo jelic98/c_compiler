@@ -78,14 +78,10 @@ class Parser:
             self.eat(Class.LPAREN)
             params = self.params()
             self.eat(Class.RPAREN)
-            if self.curr.class_ == Class.LBRACE:
-                self.eat(Class.LBRACE)
-                block = self.block()
-                self.eat(Class.RBRACE)
-                return FuncImpl(type_, id_, params, block)
-            else:
-                self.eat(Class.SEMICOLON)
-                return FuncDecl(type_, id_, params)
+            self.eat(Class.LBRACE)
+            block = self.block()
+            self.eat(Class.RBRACE)
+            return FuncImpl(type_, id_, params, block)
         else:
             self.eat(Class.SEMICOLON)
             return Decl(type_, id_)
@@ -337,10 +333,13 @@ class Parser:
 
     @restorable
     def is_func_call(self):
-        self.eat(Class.LPAREN)
-        self.args()
-        self.eat(Class.RPAREN)
-        return self.curr.class_ == Class.SEMICOLON
+        try:
+            self.eat(Class.LPAREN)
+            self.args()
+            self.eat(Class.RPAREN)
+            return self.curr.class_ == Class.SEMICOLON
+        except:
+            return False
 
     def parse(self):
         return self.program()

@@ -29,9 +29,6 @@ class Optimizer(Visitor):
     def visit_For(self, parent, node):
         pass
 
-    def visit_FuncDecl(self, parent, node):
-        pass
-
     def visit_FuncImpl(self, parent, node):
         pass
 
