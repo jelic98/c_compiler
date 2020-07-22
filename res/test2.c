@@ -7,7 +7,7 @@ int main() {
 	bcd = 345;
 	ef = a + bcd;
 
-	printf("%d\n", ef);
+	printf("Result is %d. Congrats!\n", ef);
 
 	return 0;
 }

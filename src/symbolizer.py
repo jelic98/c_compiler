@@ -1,36 +1,6 @@
 from src.visitor import Visitor
+from src.symbols import Symbols
 from src.nodes import *
-
-
-class Symbol:
-    def __init__(self, id_, type_, value=None, params=None):
-        self.id_ = id_
-        self.type_ = type_
-        self.value = value
-        self.params = params
-
-    def __str__(self):
-        symbol = (self.id_, self.type_, self.value, self.params)
-        return "<{} {} {} {}>".format(*symbol)
-
-
-class Symbols:
-    def __init__(self):
-        self.symbols = {}
-
-    def put(self, id_, type_, value=None, params=None):
-        self.symbols[id_] = Symbol(id_, type_, value, params)
-
-    def get(self, id_):
-        return self.symbols[id_]
-
-    def __str__(self):
-        out = ""
-        for _, value in self.symbols.items():
-            if len(out) > 0:
-                out += "\n"
-            out += str(value)
-        return out
 
 
 class Symbolizer(Visitor):
