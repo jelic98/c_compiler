@@ -25,7 +25,7 @@ def main():
         ast = parser.parse()
 
         grapher = Grapher(ast)
-        grapher.graph()
+        #grapher.graph()
 
         symbolizer = Symbolizer(ast)
         symbolizer.symbolize()

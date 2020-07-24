@@ -25,16 +25,29 @@ class Runner(Visitor):
         pass
 
     def visit_Assign(self, parent, node):
-        pass
+        id_ = self.visit(node, node.id_)
+        id_.value = self.visit(node, node.expr)
 
     def visit_If(self, parent, node):
-        pass
+        cond = self.visit(node, node.cond)
+        if cond:
+            self.visit(node, node.true)
+        else:
+            self.visit(node, node.false)
 
     def visit_While(self, parent, node):
-        pass
+        cond = self.visit(node, node.cond)
+        while cond:
+            self.visit(node, node.block)
+            cond = self.visit(node, node.cond)
 
     def visit_For(self, parent, node):
-        pass
+        self.visit(node, node.init)
+        cond = self.visit(node, node.cond)
+        while cond:
+            self.visit(node, node.block)
+            self.visit(node, node.step)
+            cond = self.visit(node, node.cond)
 
     def visit_FuncImpl(self, parent, node):
         if node.id_.value == 'main':
@@ -54,9 +67,15 @@ class Runner(Visitor):
                 elif isinstance(a, String):
                     out = out.replace('%s', a.value, 1)
                 elif isinstance(a, Id):
-                    value = '123'
-                    out = re.sub('%[dcs]', value, out, 1)
+                    id_ = self.visit(node.args, a)
+                    out = re.sub('%[dcs]', str(id_.value), out, 1)
             print(out, end='')
+        elif func == 'scanf':
+            pass
+        elif func == 'len':
+            pass
+        elif func == 'strcat':
+            return str(args[0]) + str(args[1])
         else:
             impl = self.global_[func]
             self.visit(node, impl.block)
@@ -68,6 +87,12 @@ class Runner(Visitor):
         for s in node.symbols:
             self.local[block][s.id_] = s
         for n in node.nodes:
+            if isinstance(n, Break):
+                break
+            if isinstance(n, Continue):
+                continue
+            if isinstance(n, Return):
+                return
             self.visit(node, n)
 
     def visit_Params(self, parent, node):
@@ -92,22 +117,69 @@ class Runner(Visitor):
         pass
 
     def visit_Int(self, parent, node):
-        pass
+        return node.value
 
     def visit_Char(self, parent, node):
-        pass
+        return node.value
 
     def visit_String(self, parent, node):
-        pass
+        return node.value
 
     def visit_Id(self, parent, node):
-        pass
+        return self.global_[node.value]
 
     def visit_BinOp(self, parent, node):
-        pass
+        symbol_first = self.visit(node, node.first)
+        first = symbol_first.value
+        if symbol_first.type_ == 'char':
+            first = ord(first)
+        symbol_second = self.visit(node, node.second)
+        second = symbol_second.value
+        if symbol_second.type_ == 'char':
+            second = ord(second)
+        if node.symbol == '+':
+            return int(first) + int(second)
+        elif node.symbol == '-':
+            return int(first) - int(second)
+        elif node.symbol == '*':
+            return int(first) * int(second)
+        elif node.symbol == '/':
+            return int(first) / int(second)
+        elif node.symbol == '%':
+            return int(first) % int(second) 
+        elif node.symbol == '==':
+            return first == second
+        elif node.symbol == '!=':
+            return int(first) != int(second)
+        elif node.symbol == '<':
+            return int(first) < int(second)
+        elif node.symbol == '>':
+            return int(first) > int(second)
+        elif node.symbol == '<=':
+            return int(first) >= int(second)
+        elif node.symbol == '>=':
+            return int(first) <= int(second)
+        elif node.symbol == '&&':
+            bool_first = first != 0
+            bool_second = second != 0
+            return bool_first and bool_second
+        elif node.symbol == '||':
+            bool_first = first != 0
+            bool_second = second != 0
+            return bool_first or bool_second
+        else:
+            return None
 
     def visit_UnOp(self, parent, node):
-        pass
+        symbol_first = self.visit(node, node.first)
+        first = symbol_first.value
+        if node.symbol == '-':
+            return -first
+        elif node.symbol == '!':
+            bool_first = first != 0
+            return not bool_first
+        else:
+            return None
 
     def run(self):
         self.visit(None, self.ast)
