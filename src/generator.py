@@ -25,8 +25,11 @@ class Generator(Visitor):
             self.visit(node, n)
         self.append('if __name__ == "__main__":')
         self.newline()
-        self.append('\t')
+        self.level += 1
+        self.indent()
         self.append('main()')
+        self.newline()
+        self.level -= 1
 
     def visit_Decl(self, parent, node):
         pass
