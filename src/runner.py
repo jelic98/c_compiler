@@ -1,4 +1,5 @@
 from src.visitor import Visitor
+from src.symbols import Symbol
 from src.nodes import *
 import re
 
@@ -8,6 +9,22 @@ class Runner(Visitor):
         self.ast = ast
         self.global_ = {}
         self.local = {}
+        self.scope = []
+
+    def get_symbol(self, node):
+        id_ = node.value
+        if len(self.scope) > 0:
+            scope = self.scope[-1]
+            if id_ in self.local[scope]:
+                return self.local[scope][id_]
+        return self.global_[id_]
+    
+    def init_scope(self, node):
+        scope = id(node)
+        if scope not in self.local:
+            self.local[scope] = {}
+            for s in node.symbols:
+                self.local[scope][s.id_] = s
 
     def visit_Program(self, parent, node):
         for s in node.symbols:
@@ -19,14 +36,27 @@ class Runner(Visitor):
         pass
 
     def visit_ArrayDecl(self, parent, node):
-        pass
+        id_ = self.get_symbol(node.id_)
+        id_.symbols = node.symbols
+        size, elems = node.size, node.elems
+        if size is not None:
+            for i in range(size.value):
+                id_.symbols.put(i, id_.type_, None)
+                id_.symbols.get(i).value = None
+        elif elems is not None:
+            self.visit(node, elems)
 
     def visit_ArrayElem(self, parent, node):
-        pass
+        id_ = self.get_symbol(node.id_)
+        index = self.visit(node, node.index)
+        return id_.symbols.get(index.value)
 
     def visit_Assign(self, parent, node):
         id_ = self.visit(node, node.id_)
-        id_.value = self.visit(node, node.expr)
+        value = self.visit(node, node.expr)
+        if isinstance(value, Symbol):
+            value = value.value
+        id_.value = value
 
     def visit_If(self, parent, node):
         cond = self.visit(node, node.cond)
@@ -50,6 +80,9 @@ class Runner(Visitor):
             cond = self.visit(node, node.cond)
 
     def visit_FuncImpl(self, parent, node):
+        id_ = self.get_symbol(node.id_)
+        id_.params = node.params
+        id_.block = node.block
         if node.id_.value == 'main':
             self.visit(node, node.block)
 
@@ -63,7 +96,7 @@ class Runner(Visitor):
                 if isinstance(a, Int):
                     out = out.replace('%d', a.value, 1)
                 elif isinstance(a, Char):
-                    out = out.replace('%c', a.value, 1)
+                    out = out.replace('%c', chr(a.value), 1)
                 elif isinstance(a, String):
                     out = out.replace('%s', a.value, 1)
                 elif isinstance(a, Id):
@@ -72,37 +105,50 @@ class Runner(Visitor):
             print(out, end='')
         elif func == 'scanf':
             pass
-        elif func == 'len':
-            pass
+        elif func == 'strlen':
+            if isinstance(a, String):
+                return len(a.value)
         elif func == 'strcat':
             return str(args[0]) + str(args[1])
         else:
             impl = self.global_[func]
+            self.visit(node, node.args)
             self.visit(node, impl.block)
 
     def visit_Block(self, parent, node):
-        block = id(node)
-        if block not in self.local:
-            self.local[block] = {}
-        for s in node.symbols:
-            self.local[block][s.id_] = s
+        scope = id(node)
+        self.init_scope(node)
+        self.scope.append(scope)
         for n in node.nodes:
-            if isinstance(n, Break):
+            if isinstance(n, Return) or isinstance(n, Break):
                 break
-            if isinstance(n, Continue):
+            elif isinstance(n, Continue):
                 continue
-            if isinstance(n, Return):
-                return
-            self.visit(node, n)
+            else:
+                self.visit(node, n)
+        self.scope.pop()
 
     def visit_Params(self, parent, node):
         pass
 
     def visit_Args(self, parent, node):
-        pass
+        func = parent.id_.value
+        impl = self.global_[func]
+        block = impl.block
+        scope = id(block)
+        self.init_scope(block)
+        self.scope.append(scope)
+        for p, a in zip(impl.params.params, node.args):
+            id_ = self.visit(block, p.id_)
+            id_.value = self.visit(block, a).value
+        self.scope.pop()
 
     def visit_Elems(self, parent, node):
-        pass
+        for i, e in enumerate(node.elems):
+            value = self.visit(node, e)
+            id_ = self.get_symbol(parent.id_)
+            id_.symbols.put(i, id_.type_, None)
+            id_.symbols.get(i).value = value
 
     def visit_Break(self, parent, node):
         pass
@@ -126,17 +172,15 @@ class Runner(Visitor):
         return node.value
 
     def visit_Id(self, parent, node):
-        return self.global_[node.value]
+        return self.get_symbol(node)
 
     def visit_BinOp(self, parent, node):
-        symbol_first = self.visit(node, node.first)
-        first = symbol_first.value
-        if symbol_first.type_ == 'char':
-            first = ord(first)
-        symbol_second = self.visit(node, node.second)
-        second = symbol_second.value
-        if symbol_second.type_ == 'char':
-            second = ord(second)
+        first = self.visit(node, node.first)
+        if isinstance(first, Symbol):
+            first = first.value
+        second = self.visit(node, node.second)
+        if isinstance(second, Symbol):
+            second = second.value
         if node.symbol == '+':
             return int(first) + int(second)
         elif node.symbol == '-':
@@ -146,7 +190,7 @@ class Runner(Visitor):
         elif node.symbol == '/':
             return int(first) / int(second)
         elif node.symbol == '%':
-            return int(first) % int(second) 
+            return int(first) % int(second)
         elif node.symbol == '==':
             return first == second
         elif node.symbol == '!=':
@@ -171,8 +215,7 @@ class Runner(Visitor):
             return None
 
     def visit_UnOp(self, parent, node):
-        symbol_first = self.visit(node, node.first)
-        first = symbol_first.value
+        first = self.visit(node, node.first).value
         if node.symbol == '-':
             return -first
         elif node.symbol == '!':

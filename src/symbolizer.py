@@ -13,10 +13,11 @@ class Symbolizer(Visitor):
             self.visit(node, n)
 
     def visit_Decl(self, parent, node):
-        parent.symbols.put(node.id_.value, node.type_.value)
+        parent.symbols.put(node.id_.value, node.type_.value, id(parent))
 
     def visit_ArrayDecl(self, parent, node):
-        parent.symbols.put(node.id_.value, node.type_.value)
+        node.symbols = Symbols()
+        parent.symbols.put(node.id_.value, node.type_.value, id(parent))
 
     def visit_ArrayElem(self, parent, node):
         pass
@@ -35,11 +36,9 @@ class Symbolizer(Visitor):
         self.visit(node, node.block)
 
     def visit_FuncImpl(self, parent, node):
-        parent.symbols.put(node.id_.value, node.type_.value)
-        self.visit(node, node.params)
-        node.block.symbols = node.params.symbols
-        node.params.symbols = None
+        parent.symbols.put(node.id_.value, node.type_.value, id(parent))
         self.visit(node, node.block)
+        self.visit(node, node.params)
 
     def visit_FuncCall(self, parent, node):
         pass
@@ -53,6 +52,7 @@ class Symbolizer(Visitor):
         node.symbols = Symbols()
         for p in node.params:
             self.visit(node, p)
+            self.visit(parent.block, p)
 
     def visit_Args(self, parent, node):
         pass

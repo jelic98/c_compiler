@@ -1,18 +1,19 @@
 class Symbol:
-    def __init__(self, id_, type_):
+    def __init__(self, id_, type_, scope):
         self.id_ = id_
         self.type_ = type_
+        self.scope = scope
 
     def __str__(self):
-        return "<{} {}>".format(self.id_, self.type_)
+        return "<{} {} {}>".format(self.id_, self.type_, self.scope)
 
 
 class Symbols:
     def __init__(self):
         self.symbols = {}
 
-    def put(self, id_, type_):
-        self.symbols[id_] = Symbol(id_, type_)
+    def put(self, id_, type_, scope):
+        self.symbols[id_] = Symbol(id_, type_, scope)
 
     def get(self, id_):
         return self.symbols[id_]
