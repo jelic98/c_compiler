@@ -1,6 +1,7 @@
 from src.visitor import Visitor
 from src.symbols import Symbol
 import re
+import os
 
 
 class Generator(Visitor):
@@ -35,11 +36,9 @@ class Generator(Visitor):
         if node.size is not None:
             self.append(' = ')
             self.visit(node, node.size)
-            self.append(' * ')
-            self.append('[None]')
+            self.append(' * [None]')
         elif node.elems is not None:
-            self.append(' = ')
-            self.append('[')
+            self.append(' = [')
             self.visit(node, node.elems)
             self.append(']')
 
@@ -99,25 +98,22 @@ class Generator(Visitor):
             args = node.args.args
             format_ = args[0]
             format_.value = re.sub('%[dcs]', '{}', format_.value)
-            self.append('print')
-            self.append('("')
+            self.append('print("')
             self.append(format_.value)
-            self.append('".format(')
-            for i, a in enumerate(args[1:]):
-                if i > 0:
-                    self.append(', ')
-                self.visit(node, a)
-            self.append(')')
-            self.append(', ')
-            self.append('end=""')
-            self.append(')')
+            self.append('"')
+            if len(args) > 1:
+                self.append('.format(')
+                for i, a in enumerate(args[1:]):
+                    if i > 0:
+                        self.append(', ')
+                    self.visit(node, a)
+                self.append(')')
+            self.append(', end="")')
         elif func == 'scanf':
             self.visit(node, node.args)
-            self.append(' = ')
-            self.append('input()')
+            self.append(' = input()')
         elif func == 'strlen':
-            self.append('len')
-            self.append('(')
+            self.append('len(')
             self.visit(node, node.args)
             self.append(')')
         elif func == 'strcat':
@@ -196,5 +192,10 @@ class Generator(Visitor):
     def generate(self):
         self.visit(None, self.ast)
         self.py = re.sub('\n\s*\n', '\n', self.py)
-        self.py = self.py.strip()
-        print(self.py)
+        path = os.path.dirname(os.path.realpath(__file__))
+        dirs = os.path.splitext(path)[0].split(os.sep)
+        dirs.insert(-1, 'out')
+        dirs[-1] = 'main.py'
+        main = os.sep.join(dirs)
+        with open(main, 'w') as source:
+            source.write(self.py)

@@ -1,6 +1,6 @@
 from src.visitor import Visitor
-import os
 from graphviz import Digraph, Source
+import os
 
 
 class Grapher(Visitor):
