@@ -215,7 +215,9 @@ class Runner(Visitor):
             return None
 
     def visit_UnOp(self, parent, node):
-        first = self.visit(node, node.first).value
+        first = self.visit(node, node.first)
+        if isinstance(first, Symbol):
+            first = first.value
         if node.symbol == '-':
             return -first
         elif node.symbol == '!':
