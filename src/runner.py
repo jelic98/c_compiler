@@ -14,9 +14,9 @@ class Runner(Visitor):
     def get_symbol(self, node):
         id_ = node.value
         if len(self.scope) > 0:
-            scope = self.scope[-1]
-            if id_ in self.local[scope]:
-                return self.local[scope][id_]
+            for scope in reversed(self.scope):
+                if id_ in self.local[scope]:
+                    return self.local[scope][id_]
         return self.global_[id_]
     
     def init_scope(self, node):
