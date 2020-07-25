@@ -166,7 +166,7 @@ class Runner(Visitor):
         return node.value
 
     def visit_Char(self, parent, node):
-        return node.value
+        return ord(node.value)
 
     def visit_String(self, parent, node):
         return node.value
