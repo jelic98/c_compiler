@@ -85,13 +85,14 @@ class Lexer:
         elif curr == '&':
             curr = self.next_char()
             if curr == '&':
-                token = Token(Class.AND, curr)
+                token = Token(Class.AND, '&&')
             else:
-                self.die(curr)
+                token = Token(Class.ADDRESS, '&')
+                self.pos -= 1
         elif curr == '|':
             curr = self.next_char()
             if curr == '|':
-                token = Token(Class.OR, curr)
+                token = Token(Class.OR, '||')
             else:
                 self.die(curr)
         elif curr == '!':
@@ -115,13 +116,13 @@ class Lexer:
         elif curr == '<':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Class.LTE, curr)
+                token = Token(Class.LTE, '<=')
             else:
                 self.die(curr)
         elif curr == '>':
             curr = self.next_char()
             if curr == '=':
-                token = Token(Class.GTE, curr)
+                token = Token(Class.GTE, '>=')
             else:
                 self.die(curr)
         elif curr == '(':

@@ -33,7 +33,8 @@ class Runner(Visitor):
             self.visit(node, n)
 
     def visit_Decl(self, parent, node):
-        pass
+        id_ = self.get_symbol(node.id_)
+        id_.value = None
 
     def visit_ArrayDecl(self, parent, node):
         id_ = self.get_symbol(node.id_)
@@ -90,21 +91,34 @@ class Runner(Visitor):
         func = node.id_.value
         args = node.args.args
         if func == 'printf':
-            out = args[0].value
-            out = out.replace('\\n', '\n')
+            format_ = args[0].value
+            format_ = format_.replace('\\n', '\n')
             for a in args[1:]:
                 if isinstance(a, Int):
-                    out = out.replace('%d', a.value, 1)
+                    format_ = format_.replace('%d', a.value, 1)
                 elif isinstance(a, Char):
-                    out = out.replace('%c', chr(a.value), 1)
+                    format_ = format_.replace('%c', chr(a.value), 1)
                 elif isinstance(a, String):
-                    out = out.replace('%s', a.value, 1)
+                    format_ = format_.replace('%s', a.value, 1)
                 elif isinstance(a, Id):
                     id_ = self.visit(node.args, a)
-                    out = re.sub('%[dcs]', str(id_.value), out, 1)
-            print(out, end='')
+                    format_ = re.sub('%[dcs]', str(id_.value), format_, 1)
+                else:
+                    value = self.visit(node.args, a)
+                    format_ = re.sub('%[dcs]', str(value), format_, 1)
+            print(format_, end='')
         elif func == 'scanf':
-            pass
+            format_ = args[0].value
+            inputs = input().split()
+            matches = re.findall('%[dcs]', format_)
+            for i, m in enumerate(matches):
+                id_ = self.visit(node.args, args[i + 1])
+                if m == '%d':
+                    id_.value = int(inputs[i])
+                elif m == '%c':
+                    id_.value = ord(inputs[i][0])
+                else:
+                    id_.value = inputs[i]
         elif func == 'strlen':
             if isinstance(a, String):
                 return len(a.value)
@@ -217,6 +231,7 @@ class Runner(Visitor):
 
     def visit_UnOp(self, parent, node):
         first = self.visit(node, node.first)
+        backup_first = first
         if isinstance(first, Symbol):
             first = first.value
         if node.symbol == '-':
@@ -224,6 +239,8 @@ class Runner(Visitor):
         elif node.symbol == '!':
             bool_first = first != 0
             return not bool_first
+        elif node.symbol == '&':
+            return backup_first
         else:
             return None
 

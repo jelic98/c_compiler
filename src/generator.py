@@ -109,12 +109,33 @@ class Generator(Visitor):
                 for i, a in enumerate(args[1:]):
                     if i > 0:
                         self.append(', ')
-                    self.visit(node, a)
+                    self.visit(node.args, a)
                 self.append(')')
             self.append(', end="")')
         elif func == 'scanf':
-            self.visit(node, node.args)
-            self.append(' = input()')
+            args = node.args.args
+            for i, a in enumerate(args[1:]):
+                if i > 0:
+                    self.append(', ')
+                self.visit(node.args, a)
+            self.append(' = input().split()')
+            format_ = args[0].value
+            matches = re.findall('%[dcs]', format_)
+            for i, m in enumerate(matches):
+                if m == '%d':
+                    self.newline()
+                    self.indent()
+                    self.visit(node.args, args[i + 1])
+                    self.append(' = int(')
+                    self.visit(node.args, args[i + 1])
+                    self.append(')')
+                elif m == '%c':
+                    self.newline()
+                    self.indent()
+                    self.visit(node.args, args[i + 1])
+                    self.append(' = ord(')
+                    self.visit(node.args, args[i + 1])
+                    self.append('[0])')
         elif func == 'strlen':
             self.append('len(')
             self.visit(node, node.args)
@@ -183,15 +204,16 @@ class Generator(Visitor):
         self.append(node.value)
 
     def visit_BinOp(self, parent, node):
-        first = self.visit(node, node.first)
+        self.visit(node, node.first)
         self.append(' ')
         self.append(node.symbol)
         self.append(' ')
-        second = self.visit(node, node.second)
+        self.visit(node, node.second)
 
     def visit_UnOp(self, parent, node):
-        self.append(node.symbol)
-        first = self.visit(node, node.first)
+        if node.symbol != '&':
+            self.append(node.symbol)
+        self.visit(node, node.first)
 
     def generate(self):
         self.visit(None, self.ast)

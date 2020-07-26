@@ -43,6 +43,8 @@ class Class(Enum):
     BREAK = auto()
     CONTINUE = auto()
     RETURN = auto()
+    
+    ADDRESS = auto()
 
     ID = auto()
     EOF = auto()

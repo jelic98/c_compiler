@@ -222,12 +222,9 @@ class Parser:
             return value
         elif self.curr.class_ == Class.ID:
             return self.id_()
-        elif self.curr.class_ in [Class.MINUS, Class.NOT]:
+        elif self.curr.class_ in [Class.MINUS, Class.NOT, Class.ADDRESS]:
             op = self.curr
-            if self.curr.class_ == Class.MINUS:
-                self.eat(Class.MINUS)
-            elif self.curr.class_ == Class.NOT:
-                self.eat(Class.NOT)
+            self.eat(self.curr.class_)
             first = None
             if self.curr.class_ == Class.LPAREN:
                 self.eat(Class.LPAREN)
