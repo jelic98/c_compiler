@@ -99,10 +99,10 @@ class Generator(Visitor):
         func = node.id_.value
         if func == 'printf':
             args = node.args.args
-            format_ = args[0]
-            format_.value = re.sub('%[dcs]', '{}', format_.value)
+            format_ = args[0].value
+            format_ = re.sub('%[dcs]', '{}', format_)
             self.append('print("')
-            self.append(format_.value)
+            self.append(format_)
             self.append('"')
             if len(args) > 1:
                 self.append('.format(')

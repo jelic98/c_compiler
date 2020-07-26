@@ -109,7 +109,8 @@ class Runner(Visitor):
             if isinstance(a, String):
                 return len(a.value)
         elif func == 'strcat':
-            return str(args[0]) + str(args[1])
+            if isinstance(args[0], String) and isinstance(args[1], String):
+                return str(args[0]) + str(args[1])
         else:
             impl = self.global_[func]
             self.visit(node, node.args)
@@ -134,19 +135,19 @@ class Runner(Visitor):
     def visit_Args(self, parent, node):
         func = parent.id_.value
         impl = self.global_[func]
-        block = impl.block
-        scope = id(block)
-        self.init_scope(block)
+        scope = id(impl.block)
+        self.init_scope(impl.block)
         self.scope.append(scope)
         for p, a in zip(impl.params.params, node.args):
-            id_ = self.visit(block, p.id_)
-            id_.value = self.visit(block, a).value
+            arg = self.visit(impl.block, a)
+            id_ = self.visit(impl.block, p.id_)
+            id_.value = arg.value
         self.scope.pop()
 
     def visit_Elems(self, parent, node):
+        id_ = self.get_symbol(parent.id_)
         for i, e in enumerate(node.elems):
             value = self.visit(node, e)
-            id_ = self.get_symbol(parent.id_)
             id_.symbols.put(i, id_.type_, None)
             id_.symbols.get(i).value = value
 
