@@ -17,6 +17,12 @@ class Symbols:
 
     def get(self, id_):
         return self.symbols[id_]
+    
+    def contains(self, id_):
+        return id_ in self.symbols
+
+    def remove(self, id_):
+        del self.symbols[id_]
 
     def __str__(self):
         out = ""

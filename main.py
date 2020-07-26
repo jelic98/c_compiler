@@ -22,16 +22,16 @@ def main():
         tokens = lexer.lex()
 
         parser = Parser(tokens)
-        ast = parser.parse()
-
-        grapher = Grapher(ast)
-        #grapher.graph()
+        ast = parser.parse() 
 
         symbolizer = Symbolizer(ast)
         symbolizer.symbolize()
 
         optimizer = Optimizer(ast)
         optimizer.optimize()
+
+        grapher = Grapher(ast)
+        #grapher.graph()
 
         generator = Generator(ast)
         generator.generate()
