@@ -162,8 +162,9 @@ class Generator(Visitor):
         self.append('continue')
 
     def visit_Return(self, parent, node):
-        self.append('return ')
+        self.append('return')
         if node.expr is not None:
+            self.append(' ')
             self.visit(node, node.expr)
 
     def visit_Type(self, parent, node):
