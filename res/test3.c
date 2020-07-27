@@ -10,7 +10,7 @@ int fun2(int p, int q, int r) {
 
 int main() {
 	int arr1[3];
-	int arr2[] = {1, 23, 456};
+	int arr2[] = { 1, 23, 456 };
 	int arr3[3];
 	int i;
 	int y;

@@ -94,10 +94,12 @@ class Parser:
         self.eat(Class.LBRACE)
         true = self.block()
         self.eat(Class.RBRACE)
-        self.eat(Class.ELSE)
-        self.eat(Class.LBRACE)
-        false = self.block()
-        self.eat(Class.RBRACE)
+        false = None
+        if self.curr.class_ == Class.ELSE:
+            self.eat(Class.ELSE)
+            self.eat(Class.LBRACE)
+            false = self.block()
+            self.eat(Class.RBRACE)
         return If(cond, true, false)
 
     def while_(self):

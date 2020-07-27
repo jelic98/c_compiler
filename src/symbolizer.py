@@ -27,7 +27,8 @@ class Symbolizer(Visitor):
 
     def visit_If(self, parent, node):
         self.visit(node, node.true)
-        self.visit(node, node.false)
+        if node.false is not None:
+            self.visit(node, node.false)
 
     def visit_While(self, parent, node):
         self.visit(node, node.block)

@@ -110,21 +110,19 @@ class Lexer:
                 token = Token(Class.ASSIGN, '=')
                 self.pos -= 1
         elif curr == '<':
-            token = Token(Class.LT, curr)
-        elif curr == '>':
-            token = Token(Class.GT, curr)
-        elif curr == '<':
             curr = self.next_char()
             if curr == '=':
                 token = Token(Class.LTE, '<=')
             else:
-                self.die(curr)
+                token = Token(Class.LT, '<')
+                self.pos -= 1
         elif curr == '>':
             curr = self.next_char()
             if curr == '=':
                 token = Token(Class.GTE, '>=')
             else:
-                self.die(curr)
+                token = Token(Class.GT, '>')
+                self.pos -= 1
         elif curr == '(':
             token = Token(Class.LPAREN, curr)
         elif curr == ')':

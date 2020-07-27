@@ -63,7 +63,8 @@ class Runner(Visitor):
         if cond:
             self.visit(node, node.true)
         else:
-            self.visit(node, node.false)
+            if node.false is not None:
+                self.visit(node, node.false)
 
     def visit_While(self, parent, node):
         cond = self.visit(node, node.cond)
@@ -99,9 +100,12 @@ class Runner(Visitor):
                     format_ = format_.replace('%c', chr(a.value), 1)
                 elif isinstance(a, String):
                     format_ = format_.replace('%s', a.value, 1)
-                elif isinstance(a, Id):
+                elif isinstance(a, Id) or isinstance(a, ArrayElem):
                     id_ = self.visit(node.args, a)
-                    format_ = re.sub('%[dcs]', str(id_.value), format_, 1)
+                    value = id_.value
+                    if id_.type_ == 'char':
+                        value = chr(value)
+                    format_ = re.sub('%[dcs]', str(value), format_, 1)
                 else:
                     value = self.visit(node.args, a)
                     format_ = re.sub('%[dcs]', str(value), format_, 1)
@@ -214,9 +218,9 @@ class Runner(Visitor):
         elif node.symbol == '>':
             return int(first) > int(second)
         elif node.symbol == '<=':
-            return int(first) >= int(second)
-        elif node.symbol == '>=':
             return int(first) <= int(second)
+        elif node.symbol == '>=':
+            return int(first) >= int(second)
         elif node.symbol == '&&':
             bool_first = first != 0
             bool_second = second != 0
