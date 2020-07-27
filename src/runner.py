@@ -10,20 +10,39 @@ class Runner(Visitor):
         self.global_ = {}
         self.local = {}
         self.scope = []
+        self.call_stack = []
+        self.search_new_call = False
+        self.return_ = False
 
     def get_symbol(self, node):
+        recursion = self.is_recursion() 
+        ref = -2 if recursion and not self.search_new_call else -1
         id_ = node.value
         for scope in reversed(self.scope):
-            if id_ in self.local[scope]:
-                return self.local[scope][id_]
+            if id_ in self.local[scope][ref]:
+                return self.local[scope][ref][id_]
         return self.global_[id_]
     
     def init_scope(self, node):
         scope = id(node)
         if scope not in self.local:
-            self.local[scope] = {}
-            for s in node.symbols:
-                self.local[scope][s.id_] = s.copy()
+            self.local[scope] = []
+        self.local[scope].append({})
+        for s in node.symbols:
+            self.local[scope][-1][s.id_] = s.copy()
+
+    def clear_scope(self, node):
+        scope = id(node)
+        self.local[scope].pop()
+
+    def is_recursion(self):
+        if len(self.call_stack) > 0:
+            curr_call = self.call_stack[-1]
+            prev_calls = self.call_stack[:-1]
+            for call in reversed(prev_calls):
+                if call == curr_call:
+                    return True
+        return False
 
     def visit_Program(self, parent, node):
         for s in node.symbols:
@@ -85,7 +104,11 @@ class Runner(Visitor):
         id_.params = node.params
         id_.block = node.block
         if node.id_.value == 'main':
+            self.init_scope(node.block)
+            self.call_stack.append(node.id_.value)
             self.visit(node, node.block)
+            self.call_stack.pop()
+            self.clear_scope(node.block)
 
     def visit_FuncCall(self, parent, node):
         func = node.id_.value
@@ -130,18 +153,26 @@ class Runner(Visitor):
                 return str(args[0]) + str(args[1])
         else:
             impl = self.global_[func]
+            self.init_scope(impl.block)
+            self.call_stack.append(func)
             self.visit(node, node.args)
+            self.return_ = False
             self.visit(node, impl.block)
+            self.call_stack.pop()
+            self.clear_scope(impl.block)
 
     def visit_Block(self, parent, node):
         scope = id(node)
-        self.init_scope(node)
         self.scope.append(scope)
         for n in node.nodes:
-            if isinstance(n, Return) or isinstance(n, Break):
+            if self.return_:
+                break
+            if isinstance(n, Break):
                 break
             elif isinstance(n, Continue):
                 continue
+            elif isinstance(n, Return):
+                self.return_ = True
             else:
                 self.visit(node, n)
         self.scope.pop()
@@ -153,11 +184,12 @@ class Runner(Visitor):
         func = parent.id_.value
         impl = self.global_[func]
         scope = id(impl.block)
-        self.init_scope(impl.block)
         self.scope.append(scope)
         for p, a in zip(impl.params.params, node.args):
-            arg = self.visit(impl.block, a)
+            self.search_new_call = True
             id_ = self.visit(impl.block, p.id_)
+            self.search_new_call = False
+            arg = self.visit(impl.block, a)
             id_.value = arg
             if isinstance(arg, Symbol):
                 id_.value = arg.value

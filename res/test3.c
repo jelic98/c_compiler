@@ -1,10 +1,10 @@
 int x;
 
-int fun(int a, int b) {
+void fun(int a, int b) {
 	printf("%d %d\n", a, b);
 }
 
-int fun2(int p, int q, int r) {
+void fun2(int p, int q, int r) {
 	return q + r;
 }
 
