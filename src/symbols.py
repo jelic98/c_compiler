@@ -7,6 +7,9 @@ class Symbol:
     def __str__(self):
         return "<{} {} {}>".format(self.id_, self.type_, self.scope)
 
+    def copy(self):
+        return Symbol(self.id_, self.type_, self.scope)
+
 
 class Symbols:
     def __init__(self):
@@ -17,7 +20,7 @@ class Symbols:
 
     def get(self, id_):
         return self.symbols[id_]
-    
+
     def contains(self, id_):
         return id_ in self.symbols
 

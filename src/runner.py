@@ -23,11 +23,11 @@ class Runner(Visitor):
         if scope not in self.local:
             self.local[scope] = {}
             for s in node.symbols:
-                self.local[scope][s.id_] = s
+                self.local[scope][s.id_] = s.copy()
 
     def visit_Program(self, parent, node):
         for s in node.symbols:
-            self.global_[s.id_] = s
+            self.global_[s.id_] = s.copy()
         for n in node.nodes:
             self.visit(node, n)
 
@@ -158,7 +158,9 @@ class Runner(Visitor):
         for p, a in zip(impl.params.params, node.args):
             arg = self.visit(impl.block, a)
             id_ = self.visit(impl.block, p.id_)
-            id_.value = arg.value
+            id_.value = arg
+            if isinstance(arg, Symbol):
+                id_.value = arg.value
         self.scope.pop()
 
     def visit_Elems(self, parent, node):

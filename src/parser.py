@@ -242,6 +242,8 @@ class Parser:
             return first
         elif self.curr.class_ == Class.ID:
             id_ = self.id_()
+        elif self.curr.class_ == Class.SEMICOLON:
+            return None
         else:
             self.die_deriv(self.factor.__name__)
 
