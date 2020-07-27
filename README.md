@@ -8,3 +8,4 @@ Lightweight modular C compiler with code optimization build to support this [con
 ### TODO
 * Using function return values
 * Review grammar
+* Example 9 calls draw one extra time

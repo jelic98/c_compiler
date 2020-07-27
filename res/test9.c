@@ -18,8 +18,8 @@ int main() {
 	int a;
 	int b;
 
-	a = 3;
-	b = 5;
+	printf("Unesite dva pozitivna cela broja: ");
+	scanf("%d%d", &a, &b);
 
 	draw(a, b);
 

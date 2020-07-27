@@ -19,8 +19,10 @@ class Runner(Visitor):
         ref = -2 if recursion and not self.search_new_call else -1
         id_ = node.value
         for scope in reversed(self.scope):
-            if id_ in self.local[scope][ref]:
-                return self.local[scope][ref][id_]
+            if scope in self.local:
+                curr_scope = self.local[scope][ref]
+                if id_ in curr_scope:
+                    return curr_scope[id_]
         return self.global_[id_]
     
     def init_scope(self, node):
@@ -80,22 +82,30 @@ class Runner(Visitor):
     def visit_If(self, parent, node):
         cond = self.visit(node, node.cond)
         if cond:
+            self.init_scope(node.true)
             self.visit(node, node.true)
+            self.clear_scope(node.true)
         else:
             if node.false is not None:
+                self.init_scope(node.false)
                 self.visit(node, node.false)
+                self.clear_scope(node.false)
 
     def visit_While(self, parent, node):
         cond = self.visit(node, node.cond)
         while cond:
+            self.init_scope(node.block)
             self.visit(node, node.block)
+            self.clear_scope(node.block)
             cond = self.visit(node, node.cond)
 
     def visit_For(self, parent, node):
         self.visit(node, node.init)
         cond = self.visit(node, node.cond)
         while cond:
+            self.init_scope(node.block)
             self.visit(node, node.block)
+            self.clear_scope(node.block)
             self.visit(node, node.step)
             cond = self.visit(node, node.cond)
 
@@ -104,11 +114,11 @@ class Runner(Visitor):
         id_.params = node.params
         id_.block = node.block
         if node.id_.value == 'main':
-            self.init_scope(node.block)
             self.call_stack.append(node.id_.value)
+            self.init_scope(node.block)
             self.visit(node, node.block)
-            self.call_stack.pop()
             self.clear_scope(node.block)
+            self.call_stack.pop()
 
     def visit_FuncCall(self, parent, node):
         func = node.id_.value
@@ -153,13 +163,13 @@ class Runner(Visitor):
                 return str(args[0]) + str(args[1])
         else:
             impl = self.global_[func]
-            self.init_scope(impl.block)
             self.call_stack.append(func)
+            self.init_scope(impl.block)
             self.visit(node, node.args)
-            self.return_ = False
             self.visit(node, impl.block)
-            self.call_stack.pop()
             self.clear_scope(impl.block)
+            self.call_stack.pop()
+            self.return_ = False
 
     def visit_Block(self, parent, node):
         scope = id(node)
