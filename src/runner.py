@@ -166,12 +166,14 @@ class Runner(Visitor):
             self.call_stack.append(func)
             self.init_scope(impl.block)
             self.visit(node, node.args)
-            self.visit(node, impl.block)
+            result = self.visit(node, impl.block)
             self.clear_scope(impl.block)
             self.call_stack.pop()
             self.return_ = False
+            return result
 
     def visit_Block(self, parent, node):
+        result = None
         scope = id(node)
         self.scope.append(scope)
         if len(self.local[scope]) > 5:
@@ -185,9 +187,12 @@ class Runner(Visitor):
                 continue
             elif isinstance(n, Return):
                 self.return_ = True
+                if n.expr is not None:
+                    result = self.visit(n, n.expr)
             else:
                 self.visit(node, n)
         self.scope.pop()
+        return result
 
     def visit_Params(self, parent, node):
         pass
