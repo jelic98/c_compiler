@@ -11,11 +11,11 @@ class Runner(Visitor):
         self.local = {}
         self.scope = []
         self.call_stack = []
-        self.search_new_call = False
+        self.search_new_call = True
         self.return_ = False
 
     def get_symbol(self, node):
-        recursion = self.is_recursion() 
+        recursion = self.is_recursion()
         ref = -2 if recursion and not self.search_new_call else -1
         id_ = node.value
         for scope in reversed(self.scope):
@@ -24,7 +24,7 @@ class Runner(Visitor):
                 if id_ in curr_scope:
                     return curr_scope[id_]
         return self.global_[id_]
-    
+
     def init_scope(self, node):
         scope = id(node)
         if scope not in self.local:
@@ -174,6 +174,8 @@ class Runner(Visitor):
     def visit_Block(self, parent, node):
         scope = id(node)
         self.scope.append(scope)
+        if len(self.local[scope]) > 5:
+            exit(0)
         for n in node.nodes:
             if self.return_:
                 break
@@ -196,10 +198,10 @@ class Runner(Visitor):
         scope = id(impl.block)
         self.scope.append(scope)
         for p, a in zip(impl.params.params, node.args):
-            self.search_new_call = True
-            id_ = self.visit(impl.block, p.id_)
             self.search_new_call = False
             arg = self.visit(impl.block, a)
+            self.search_new_call = True
+            id_ = self.visit(impl.block, p.id_)
             id_.value = arg
             if isinstance(arg, Symbol):
                 id_.value = arg.value
