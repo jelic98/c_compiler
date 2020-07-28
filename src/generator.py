@@ -60,9 +60,12 @@ class Generator(Visitor):
         self.append('if ')
         self.visit(node, node.cond)
         self.append(':')
+        self.newline()
         self.visit(node, node.true)
         if node.false is not None:
+            self.indent()
             self.append('else:')
+            self.newline()
             self.visit(node, node.false)
 
     def visit_While(self, parent, node):
@@ -100,6 +103,7 @@ class Generator(Visitor):
         if func == 'printf':
             args = node.args.args
             format_ = args[0].value
+            matches = re.findall('%[dcs]', format_)
             format_ = re.sub('%[dcs]', '{}', format_)
             self.append('print("')
             self.append(format_)
@@ -109,7 +113,12 @@ class Generator(Visitor):
                 for i, a in enumerate(args[1:]):
                     if i > 0:
                         self.append(', ')
-                    self.visit(node.args, a)
+                    if matches[i] == '%c':
+                        self.append('chr(')
+                        self.visit(node.args, a)
+                        self.append(')')
+                    else:
+                        self.visit(node.args, a)
                 self.append(')')
             self.append(', end="")')
         elif func == 'scanf':
@@ -118,7 +127,9 @@ class Generator(Visitor):
                 if i > 0:
                     self.append(', ')
                 self.visit(node.args, a)
-            self.append(' = input().split()')
+            self.append(' = input()')
+            if len(args[1:]) > 1:
+                self.append('.split()')
             format_ = args[0].value
             matches = re.findall('%[dcs]', format_)
             for i, m in enumerate(matches):
@@ -204,11 +215,15 @@ class Generator(Visitor):
         self.append(node.value)
 
     def visit_BinOp(self, parent, node):
+        self.append('int(')
         self.visit(node, node.first)
+        self.append(')')
         self.append(' ')
         self.append(node.symbol)
         self.append(' ')
+        self.append('int(')
         self.visit(node, node.second)
+        self.append(')')
 
     def visit_UnOp(self, parent, node):
         if node.symbol != '&':

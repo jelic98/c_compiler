@@ -114,7 +114,8 @@ class Grapher(Visitor):
 
     def visit_Return(self, parent, node):
         self.add_node(parent, node)
-        self.visit(node, node.expr)
+        if node.expr is not None:
+            self.visit(node, node.expr)
 
     def visit_Type(self, parent, node):
         name = node.value
