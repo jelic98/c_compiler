@@ -60,12 +60,12 @@ class Runner(Visitor):
         id_ = self.get_symbol(node.id_)
         id_.symbols = node.symbols
         size, elems = node.size, node.elems
-        if size is not None:
+        if elems is not None:
+            self.visit(node, elems)
+        elif size is not None:
             for i in range(size.value):
                 id_.symbols.put(i, id_.type_, None)
                 id_.symbols.get(i).value = None
-        elif elems is not None:
-            self.visit(node, elems)
 
     def visit_ArrayElem(self, parent, node):
         id_ = self.get_symbol(node.id_)
@@ -135,9 +135,16 @@ class Runner(Visitor):
                     format_ = format_.replace('%s', a.value, 1)
                 elif isinstance(a, Id) or isinstance(a, ArrayElem):
                     id_ = self.visit(node.args, a)
-                    value = id_.value
-                    if id_.type_ == 'char':
-                        value = chr(value)
+                    if hasattr(id_, 'symbols') and id_.type_ == 'char':
+                        elems = id_.symbols
+                        ints = [s.value for s in elems]
+                        non_nulls = [i for i in ints if i is not None]
+                        chars = [chr(i) for i in non_nulls]
+                        value = ''.join(chars)
+                    else:
+                        value = id_.value
+                        if id_.type_ == 'char':
+                            value = chr(value)
                     format_ = re.sub('%[dcs]', str(value), format_, 1)
                 else:
                     value = self.visit(node.args, a)
@@ -153,14 +160,36 @@ class Runner(Visitor):
                     id_.value = int(inputs[i])
                 elif m == '%c':
                     id_.value = ord(inputs[i][0])
-                else:
-                    id_.value = inputs[i]
+                elif m == '%s':
+                    word = inputs[i]
+                    length = len(id_.symbols)
+                    for c in word:
+                        id_.symbols.put(length, id_.type_, None)
+                        id_.symbols.get(length).value = ord(c)
+                        length += 1
         elif func == 'strlen':
-            if isinstance(args[0], String):
-                return len(args[0].value)
+            a = args[0]
+            if isinstance(a, String):
+                return len(a.value)
+            elif isinstance(a, Id):
+                id_ = self.visit(node.args, a)
+                return len(id_.symbols)
         elif func == 'strcat':
-            if isinstance(args[0], String) and isinstance(args[1], String):
-                args[0] = args[0] + args[1]
+            a, b = args[0], args[1]
+            dest = self.get_symbol(a)
+            values = []
+            if isinstance(b, Id):
+                src = self.get_symbol(b)
+                elems = [s.value for s in src.symbols]
+                non_nulls = [c for c in elems if c is not None]
+                values = [c for c in non_nulls]
+            elif isinstance(b, String):
+                values = [ord(c) for c in b.value]
+            i = len(dest.symbols)
+            for v in values:
+                dest.symbols.put(i, dest.type_, None)
+                dest.symbols.get(i).value = v
+                i += 1
         else:
             impl = self.global_[func]
             self.call_stack.append(func)

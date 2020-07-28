@@ -26,6 +26,9 @@ class Symbols:
 
     def remove(self, id_):
         del self.symbols[id_]
+    
+    def __len__(self):
+        return len(self.symbols)
 
     def __str__(self):
         out = ""
