@@ -31,7 +31,7 @@ def main():
         optimizer.optimize()
 
         grapher = Grapher(ast)
-        #grapher.graph()
+        grapher.graph()
 
         generator = Generator(ast)
         generator.generate()

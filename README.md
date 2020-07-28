@@ -4,6 +4,18 @@
 
 Lightweight modular C compiler with code optimization build to support this [context free grammar](https://github.com/jelic98/c_compiler/blob/master/grammar.txt).
 
+## Usage
+
+## Usage
+
+1. Compiler and run example C code
+```bash
+python3 main.py res/testX.c
+```
+where X is chosen from [1-10]
+
+2. Generated code and AST are storen in _out_ directory
+
 ## Future work
 
 * Error handling
