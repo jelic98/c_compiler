@@ -156,11 +156,11 @@ class Runner(Visitor):
                 else:
                     id_.value = inputs[i]
         elif func == 'strlen':
-            if isinstance(a, String):
-                return len(a.value)
+            if isinstance(args[0], String):
+                return len(args[0].value)
         elif func == 'strcat':
             if isinstance(args[0], String) and isinstance(args[1], String):
-                return str(args[0]) + str(args[1])
+                args[0] = args[0] + args[1]
         else:
             impl = self.global_[func]
             self.call_stack.append(func)

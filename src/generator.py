@@ -36,14 +36,14 @@ class Generator(Visitor):
 
     def visit_ArrayDecl(self, parent, node):
         self.visit(node, node.id_)
-        if node.size is not None:
-            self.append(' = ')
-            self.visit(node, node.size)
-            self.append(' * [None]')
-        elif node.elems is not None:
+        if node.elems is not None:
             self.append(' = [')
             self.visit(node, node.elems)
             self.append(']')
+        elif node.size is not None:
+            self.append(' = ')
+            self.visit(node, node.size)
+            self.append(' * [None]')
 
     def visit_ArrayElem(self, parent, node):
         self.visit(node, node.id_)
@@ -100,8 +100,8 @@ class Generator(Visitor):
 
     def visit_FuncCall(self, parent, node):
         func = node.id_.value
+        args = node.args.args
         if func == 'printf':
-            args = node.args.args
             format_ = args[0].value
             matches = re.findall('%[dcs]', format_)
             format_ = re.sub('%[dcs]', '{}', format_)
@@ -117,12 +117,15 @@ class Generator(Visitor):
                         self.append('chr(')
                         self.visit(node.args, a)
                         self.append(')')
+                    elif matches[i] == '%s':
+                        self.append('"".join([chr(x) for x in ')
+                        self.visit(node.args, a)
+                        self.append('])')
                     else:
                         self.visit(node.args, a)
                 self.append(')')
             self.append(', end="")')
         elif func == 'scanf':
-            args = node.args.args
             for i, a in enumerate(args[1:]):
                 if i > 0:
                     self.append(', ')
@@ -147,14 +150,24 @@ class Generator(Visitor):
                     self.append(' = ord(')
                     self.visit(node.args, args[i + 1])
                     self.append('[0])')
+                elif m == '%s':
+                    self.newline()
+                    self.indent()
+                    self.visit(node.args, args[i + 1])
+                    self.append(' = [ord(x) for x in ')
+                    self.visit(node.args, args[i + 1])
+                    self.append(']')
         elif func == 'strlen':
             self.append('len(')
             self.visit(node, node.args)
             self.append(')')
         elif func == 'strcat':
-            self.append(node.args[0])
-            self.append(' + ')
-            self.append(node.args[1])
+            self.visit(node.args, args[0])
+            self.append(' += ')
+            self.visit(node.args, args[1])
+            self.newline()
+            self.indent()
+            self.append('print(asd)')
         else:
             self.append(func)
             self.append('(')
