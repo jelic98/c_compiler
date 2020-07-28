@@ -6,8 +6,6 @@ Lightweight modular C compiler with code optimization build to support this [con
 
 ## Usage
 
-## Usage
-
 1. Compile and run example C code
 ```bash
 python3 main.py res/testX.c
