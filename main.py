@@ -22,7 +22,7 @@ def main():
         tokens = lexer.lex()
 
         parser = Parser(tokens)
-        ast = parser.parse() 
+        ast = parser.parse()
 
         symbolizer = Symbolizer(ast)
         symbolizer.symbolize()

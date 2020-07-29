@@ -1,5 +1,4 @@
 from src.visitor import Visitor
-from src.symbols import Symbol
 import re
 import os
 

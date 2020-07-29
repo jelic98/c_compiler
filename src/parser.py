@@ -17,7 +17,6 @@ class Parser:
             result = call(self, *args, **kwargs)
             self.__dict__ = pickle.loads(state)
             return result
-
         return wrapper
 
     def eat(self, class_):
