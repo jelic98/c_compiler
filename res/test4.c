@@ -1,6 +1,5 @@
 int main() {
-	int start;
-	char finish;
+	int start, finish;
 
 	printf("Unesite dva pozitivna cela broja: ");
 	scanf("%d%d", &start, &finish);

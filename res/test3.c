@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int x;
 
 void fun(int a, int b) {
@@ -8,7 +10,7 @@ int fun2(int x, int y) {
 	return x + y;
 }
 
-void fun3(int p, int q, int r) {
+int fun3(int p, int q, int r) {
 	return q + r;
 }
 
