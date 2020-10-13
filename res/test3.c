@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 int x;
 
 void fun(int a, int b) {
