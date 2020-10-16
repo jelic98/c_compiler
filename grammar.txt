@@ -26,13 +26,13 @@ EXPR -> TERM ( ( '+' | '-' ) TERM )*
 TERM -> FACT ( ( '*' | '/' | '%' ) FACT )*
 FACT -> ( '-' )? ( CONST | ID | ARRAY_ELEM | FUNC_CALL | '(' EXPR ')' )
 
-LOGIC_EXPR -> LOGIC_OR ( ( ( '=' | '!=' | '<' | '>' | '<=' | '>=' ) LOGIC_OR )*
+LOGIC_EXPR -> LOGIC_OR ( ( ( '==' | '!=' | '<' | '>' | '<=' | '>=' ) LOGIC_OR )*
 LOGIC_OR -> LOGIC_AND ( '||' LOGIC_AND )*
 LOGIC_AND -> LOGIC_FACT ( '&&' LOGIC_FACT )*
 LOGIC_FACT -> ( '!' )? ( ID | '(' LOGIC_EXPR ')' )
 
-TYPE -> 'int' | 'char' | 'void'
+TYPE -> ( 'int' | 'char' | 'void' )
 NUMBER -> ( INT | CHAR )
 CONST -> ( NUMBER | STRING )
 
-ID, INT, CHAR, STRING -> ...
+ID, INT, CHAR, STRING -> . . .
