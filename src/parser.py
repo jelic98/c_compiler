@@ -239,8 +239,6 @@ class Parser:
             first = self.logic()
             self.eat(Class.RPAREN)
             return first
-        elif self.curr.class_ == Class.ID:
-            id_ = self.id_()
         elif self.curr.class_ == Class.SEMICOLON:
             return None
         else:
