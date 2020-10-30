@@ -165,12 +165,6 @@ class Parser:
             if len(args) > 0:
                 self.eat(Class.COMMA)
             args.append(self.expr())
-            if self.curr.class_ == Class.INT:
-                self.eat(Class.INT)
-            elif self.curr.class_ == Class.CHAR:
-                self.eat(Class.CHAR)
-            elif self.curr.class_ == Class.STRING:
-                self.eat(Class.STRING)
         return Args(args)
 
     def elems(self):
@@ -179,12 +173,6 @@ class Parser:
             if len(elems) > 0:
                 self.eat(Class.COMMA)
             elems.append(self.expr())
-            if self.curr.class_ == Class.INT:
-                self.eat(Class.INT)
-            elif self.curr.class_ == Class.CHAR:
-                self.eat(Class.CHAR)
-            elif self.curr.class_ == Class.STRING:
-                self.eat(Class.STRING)
         return Elems(elems)
 
     def return_(self):
