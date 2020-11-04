@@ -302,20 +302,23 @@ class Parser:
         else:
             return first
 
-    def logic(self):
+    def logic_term(self):
         first = self.compare()
-        if self.curr.class_ == Class.AND:
+        while self.curr.class_ == Class.AND:
             op = self.curr.lexeme
             self.eat(Class.AND)
             second = self.compare()
-            return BinOp(op, first, second)
-        elif self.curr.class_ == Class.OR:
+            first = BinOp(op, first, second)
+        return first
+
+    def logic(self):
+        first = self.logic_term()
+        while self.curr.class_ == Class.OR:
             op = self.curr.lexeme
             self.eat(Class.OR)
-            second = self.compare()
-            return BinOp(op, first, second)
-        else:
-            return first
+            second = self.logic_term()
+            first = BinOp(op, first, second)
+        return first
 
     @restorable
     def is_func_call(self):

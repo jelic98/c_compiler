@@ -166,7 +166,6 @@ class Generator(Visitor):
             self.visit(node.args, args[1])
             self.newline()
             self.indent()
-            self.append('print(asd)')
         else:
             self.append(func)
             self.append('(')
@@ -227,28 +226,28 @@ class Generator(Visitor):
         self.append(node.value)
 
     def visit_BinOp(self, parent, node):
-        self.append('int(')
         self.visit(node, node.first)
-        self.append(')')
-        self.append(' ')
-        self.append(node.symbol)
-        self.append(' ')
-        self.append('int(')
+        if node.symbol == '&&':
+            self.append(' and ')
+        elif node.symbol == '||':
+            self.append(' or ')
+        elif node.symbol == '/':
+            self.append('//')
+        else:
+            self.append(node.symbol)
         self.visit(node, node.second)
-        self.append(')')
 
     def visit_UnOp(self, parent, node):
-        if node.symbol != '&':
+        if node.symbol == '!':
+            self.append('not ')
+        elif node.symbol != '&':
             self.append(node.symbol)
         self.visit(node, node.first)
 
     def generate(self):
         self.visit(None, self.ast)
         self.py = re.sub('\n\s*\n', '\n', self.py)
-        path = os.path.dirname(os.path.realpath(__file__))
-        dirs = os.path.splitext(path)[0].split(os.sep)
-        dirs.insert(-1, 'out')
-        dirs[-1] = 'main.py'
-        main = os.sep.join(dirs)
-        with open(main, 'w') as source:
+        path = 'main.py'
+        with open(path, 'w') as source:
             source.write(self.py)
+        return path
