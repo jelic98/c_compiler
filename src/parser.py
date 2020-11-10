@@ -326,7 +326,7 @@ class Parser:
             self.eat(Class.LPAREN)
             self.args()
             self.eat(Class.RPAREN)
-            return self.curr.class_ == Class.SEMICOLON
+            return self.curr.class_ != Class.LBRACE
         except:
             return False
 
