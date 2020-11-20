@@ -12,7 +12,7 @@ python3 main.py res/testX.c
 ```
 where X is chosen from [1-10]
 
-2. Generated code and AST are storen in _out_ directory
+2. Generated code and AST are stored in _out_ directory
 
 ## Future work
 
