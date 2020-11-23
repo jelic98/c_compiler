@@ -244,10 +244,9 @@ class Generator(Visitor):
             self.append(node.symbol)
         self.visit(node, node.first)
 
-    def generate(self):
+    def generate(self, path):
         self.visit(None, self.ast)
         self.py = re.sub('\n\s*\n', '\n', self.py)
-        path = 'main.py'
         with open(path, 'w') as source:
             source.write(self.py)
         return path
