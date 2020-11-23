@@ -11,11 +11,11 @@ import argparse
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('path')
+    arg_parser.add_argument('read_path')
+    arg_parser.add_argument('write_path')
     args = arg_parser.parse_args()
-    path = args.path
 
-    with open(path, 'r') as source:
+    with open(args.read_path, 'r') as source:
         text = source.read()
 
         lexer = Lexer(text)
@@ -34,7 +34,7 @@ def main():
         grapher.graph()
 
         generator = Generator(ast)
-        generator.generate()
+        generator.generate(args.write_path)
 
         runner = Runner(ast)
         runner.run()
