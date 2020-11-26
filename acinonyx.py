@@ -3,19 +3,16 @@
 DEBUG = True # OBAVEZNO: Postaviti na False pre slanja projekta
  
 if DEBUG:
-   import os
-   path_root = '/content/Datoteke/Druga faza/'
-   path_grader = f'{path_root}grader.sh'
-   os.system(f'chmod +x {path_grader}')
    test_id = '01' # Redni broj test primera [01-15]
+   path_root = '/content/Datoteke/Druga faza/'
    args = {}
-   args['src'] = f'{path_root}{test_id}/src.pas' # Izvorna C datoteka
-   args['gen'] = f'{path_root}{test_id}/gen.c' # Generisana PY datoteka
+   args['src'] = f'{path_root}{test_id}/src.pas' # Izvorna PAS datoteka
+   args['gen'] = f'{path_root}{test_id}/gen.c' # Generisana C datoteka
 else:
    import argparse
    arg_parser = argparse.ArgumentParser()
-   arg_parser.add_argument('src') # Izvorna C datoteka
-   arg_parser.add_argument('gen') # Generisana PY datoteka
+   arg_parser.add_argument('src') # Izvorna PAS datoteka
+   arg_parser.add_argument('gen') # Generisana C datoteka
    args = vars(arg_parser.parse_args())
  
 with open(args['src'], 'r') as source:
@@ -31,7 +28,17 @@ with open(args['src'], 'r') as source:
    runner = Runner(ast)
    runner.run()
  
-if DEBUG:
-   os.system(f'bash {path_grader}')
- 
 # ACINONYX - END
+
+# GRADER - BEGIN
+ 
+# 1. Preuzeti notebook kao .py datoteku i imenovati je main.py
+# 2. Postaviti main.py na putanju na koju pokazuje path_root
+ 
+if DEBUG:
+   import os
+   path_grader = f'{path_root}grader.sh'
+   os.system(f'chmod +x {path_grader}') # Dozvola za izvršavanje
+   os.system(f'bash {path_grader}') # Pokretanje gradera
+ 
+# GRADER - END
