@@ -8,7 +8,7 @@ Lightweight modular C compiler with code optimization build to support [this](ht
 
 1. Compile and run example C code
 ```bash
-python3 main.py res/testX.c
+python3 main.py res/testX.c gen/testX.py
 ```
 where X is chosen from [1-10]
 
