@@ -36,9 +36,8 @@ with open(args['src'], 'r') as source:
 # 2. Postaviti main.py na putanju na koju pokazuje path_root
  
 if DEBUG:
-   import os
    path_grader = f'{path_root}grader.sh'
-   os.system(f'chmod +x {path_grader}') # Dozvola za izvršavanje
-   os.system(f'bash {path_grader}') # Pokretanje gradera
+   !chmod +x '{path_grader}' # Dozvola za izvršavanje
+   !bash '{path_grader}' '{path_root}' # Pokretanje gradera
  
 # GRADER - END
