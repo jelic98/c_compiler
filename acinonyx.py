@@ -3,7 +3,7 @@
 DEBUG = True # OBAVEZNO: Postaviti na False pre slanja projekta
  
 if DEBUG:
-   test_id = '01' # Redni broj test primera [01-15]
+   test_id = '01' # Redni broj test primera [01-16]
    path_root = '/content/Datoteke/Druga faza/'
    args = {}
    args['src'] = f'{path_root}{test_id}/src.pas' # Izvorna PAS datoteka
