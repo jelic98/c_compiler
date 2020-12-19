@@ -32,8 +32,14 @@ with open(args['src'], 'r') as source:
 
 # GRADER - BEGIN
  
-# 1. Preuzeti notebook kao .py datoteku i imenovati je main.py
-# 2. Postaviti main.py na putanju na koju pokazuje path_root
+# 1. Preuzeti direktorijum Datoteke sa materijala
+# 2. Postaviti arhivu u content direktorijum u okviru sesije
+# 3. Napraviti i pokrenuti ćeliju sa komandom !unzip 'arhiva.zip'
+# 4. Postaviti DEBUG promenljivu na False
+# 5. Preuzeti notebook kao .py datoteku i imenovati je main.py
+# 6. Postaviti main.py na putanju na koju pokazuje path_root
+# 7. Postaviti DEBUG promenljivu na True
+# 8. Pokrenuti grader.sh pokretanjem ove ćelije
  
 if DEBUG:
    path_grader = f'{path_root}grader.sh'
